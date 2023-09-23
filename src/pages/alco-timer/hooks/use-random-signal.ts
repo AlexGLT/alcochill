@@ -22,6 +22,8 @@ export const useRandomSignal = ({
 	maxTimeInMinutes,
 }: Params): ReturnParams => {
 	const [isStopped, setIsStopped] = useState(true);
+
+	// @ts-expect-error temprorary
 	const [previousSignals, setPreviousSignals] = useState<Array<string>>(JSON.parse(localStorage.getItem(PREVIOUS_SIGNAL_KEY)) ?? []);
 
 	const audio = useRef<HTMLAudioElement>(new Audio(SOUND_LINK));
