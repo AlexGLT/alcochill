@@ -1,0 +1,33 @@
+@import "./normalizr";
+
+:root {
+	font-family: sans-serif;
+	font-weight: 400;
+
+	color-scheme: light dark;
+	color: rgba(255, 255, 255, 0.87);
+	background-color: lighten(#111111, 7%);
+
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-text-size-adjust: 100%;
+}
+
+#root {
+	width: 100vw;
+	height: 100vh;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+html {
+	font-size: 24px;
+}
+
+* {
+	box-sizing: border-box;
+}

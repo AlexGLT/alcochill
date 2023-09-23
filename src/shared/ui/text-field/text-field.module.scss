@@ -1,0 +1,42 @@
+@import '../global-styles.module.scss';
+
+$placeholder-text-color: #8C9BAB;
+$text-color: #B6C2CF;
+
+.text-field {
+	--backgroud-color: #22272B;
+	--border-color: #A6C5E229;
+
+	width: 10em;
+	height: 2.5em;
+	
+	padding: 0.5em;
+
+	border: $border-width solid var(--border-color);
+	border-radius: $border-radius;
+	outline: none;
+
+	background-color: var(--backgroud-color);
+
+	font-size: 1em;
+	color: $text-color;
+
+	transition-duration: $transition-time;
+	transition-property: background-color, border-color, filter;
+
+	cursor: text;
+
+	&::placeholder {
+		color: $placeholder-text-color;
+	}
+
+	&:hover {
+		filter: brightness(1.2);
+	}
+
+	&:focus {
+		--border-color: #85B8FF;
+
+		filter: brightness(1);
+	}
+}

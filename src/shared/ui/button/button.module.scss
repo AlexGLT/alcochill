@@ -1,0 +1,91 @@
+@import '../global-styles.module.scss';
+
+$accent-selected: #092957;
+$interactive-filter: 0.4;
+
+.button {
+	--background-color: $color-default;
+	--text-color: $text-color-default;
+
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	flex-grow: 0;
+
+	min-height: 2em;
+	min-width: 6em;
+
+	padding: 0.625em;
+
+	border: 0;
+	border-radius: $border-radius;
+
+	background-color: var(--background-color);
+
+	font-size: 1em;
+	font-weight: 600;
+	color: var(--text-color);
+
+	transition: filter 0.2s;
+
+	cursor: pointer;
+
+	&_default {
+		--background-color: #{$accent-color-default};
+		--text-color: #{$text-color-dark};
+	}
+	
+	&_primary {
+		--background-color: #{$accent-color-primary};
+	}
+
+	&_success {
+		--background-color: #{$accent-color-success};
+		--text-color: #{$text-color-dark};
+	}
+
+	&_danger {
+		--background-color: #{$accent-color-danger};
+		--text-color: #{$text-color-dark};
+	}
+
+	&_warning {
+		--background-color: #{$accent-color-warning};
+		--text-color: #{$text-color-dark};
+	}
+
+	&:hover {
+		filter: brightness(calc(1 + $interactive-filter));
+	}
+
+	&:active {
+		filter: brightness(calc(1 + 2 * $interactive-filter));
+	}
+
+	&:focus:not(:focus-visible) {
+		outline: 0;
+	}
+
+	&:focus-visible {
+		outline: $border-width solid white;
+	}
+
+	&:disabled {
+		cursor: not-allowed;
+		filter: brightness(0.35);
+
+		&:hover, &:active {
+			filter: brightness(0.35);
+		}
+	}
+
+	&_selected {
+		--background-color: #{$accent-selected};
+		--text-color: #579DFF;
+
+		&:hover, &:active {
+			filter: initial;
+		}
+	}
+}

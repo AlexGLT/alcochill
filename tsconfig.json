@@ -1,0 +1,83 @@
+{
+	"compilerOptions": {
+		/* Modules */
+		"target": "ES2020",
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+
+		"allowArbitraryExtensions": true,
+		"allowImportingTsExtensions": true,
+		"resolveJsonModule": true,
+
+		"rootDir": "./",
+		"baseUrl": "./",
+		"paths": {
+			"@app/*": ["./src/app/*"],
+			"@entities/*": ["./src/entities/*"],
+			"@features/*": ["./src/features/*"],
+			"@widgets/*": ["./src/widgets/*"],
+			"@pages/*": ["./src/pages/*"],
+			"@shared/*": ["./src/shared/*"]
+		},
+
+		/* Type Checking */
+		"strict": false,
+		"alwaysStrict": true,
+		"allowUnusedLabels": false,
+		"noImplicitOverride": true,
+		"noPropertyAccessFromIndexSignature": false,
+		"exactOptionalPropertyTypes": false,
+		"strictBindCallApply": true,
+		"strictFunctionTypes": false,
+		"strictNullChecks": true,
+		"strictPropertyInitialization": true,
+		"types": [],
+
+		// will be overridden by ts-eslint
+		"allowUnreachableCode": true,
+		"noFallthroughCasesInSwitch": false,
+		"noImplicitAny": false,
+		"noImplicitReturns": false,
+		"noImplicitThis": false,
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+
+		/* Emit */
+		"noEmit": true,
+		"newLine": "lf",
+		"downlevelIteration": false,
+		"removeComments": true,
+		"sourceMap": true,
+
+		/* JavaScript Support */
+		"allowJs": true,
+		"checkJs": false,
+
+		/* Interop Constraints */
+		"allowSyntheticDefaultImports": true,
+		"isolatedModules": true,
+
+		/* Language and Environment */
+		"useDefineForClassFields": true,
+		"experimentalDecorators": true,
+		"jsx": "react-jsx",
+		"lib": ["ES2023", "DOM", "DOM.Iterable"],
+
+		/* Output Formatting */
+		"noErrorTruncation": true,
+		"pretty": true,
+
+		/* Completeness */
+		"skipLibCheck": true,
+		"plugins": [
+			{
+				"name": "typescript-plugin-css-modules",
+				"options": {
+					"classnameTransform": "camelCaseOnly"
+				}
+			}
+		]
+	},
+	"include": ["src"],
+	"references": [{"path": "./tsconfig.node.json"}],
+}
