@@ -318,7 +318,7 @@ const commonConfig = {
 		'eol-last': [SEVERITY.ERROR, 'always'],
 		'func-call-spacing': [SEVERITY.ERROR, 'never'],
 		'function-call-argument-newline': [SEVERITY.ERROR, 'consistent'],
-		'function-paren-newline': [SEVERITY.ERROR, 'multiline'],
+		'function-paren-newline': [SEVERITY.ERROR, 'multiline-arguments'],
 		'generator-star-spacing': [SEVERITY.ERROR, {
 			before: false,
 			after: true,
@@ -495,7 +495,7 @@ const commonConfig = {
 		// Static analysis
 		
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/default.md
-		'import/default': SEVERITY.ERROR,
+		'import/default': SEVERITY.OFF,
 		
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/named.md
 		'import/named': SEVERITY.ERROR,
@@ -597,10 +597,10 @@ const commonConfig = {
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-unassigned-import.md
 		'import/no-unassigned-import': [SEVERITY.ERROR, {
 			allow: [
-				'./*/*.css',
-				'./*/*.scss',
-				'./*/*.less',
-				'./*/*.styl',
+				'**/*.css',
+				'**/*.scss',
+				'**/*.less',
+				'**/*.styl',
 			],
 		}],
 		
