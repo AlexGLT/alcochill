@@ -1,0 +1,6 @@
+@import '../global-styles.module.scss';
+
+.card {
+	border: $border-width solid #3a3a3a;
+	border-radius: $border-radius;
+}

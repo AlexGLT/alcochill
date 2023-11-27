@@ -11,8 +11,9 @@ export default defineConfig({
 	css: {
 		modules: {
 			localsConvention: 'camelCaseOnly',
-			generateScopedName: '[local] [local]___[hash:base64:5]',
+			generateScopedName: '[local]___[hash:base64:5]',
+
 		},
 	},
-	
+	assetsInclude: ['./audio']
 });

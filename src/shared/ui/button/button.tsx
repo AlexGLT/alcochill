@@ -7,7 +7,7 @@ import styles from './button.module.scss';
 import type {
 	FC,
 	PropsWithChildren,
-	MouseEvent
+	MouseEvent,
 } from 'react';
 
 
@@ -23,25 +23,33 @@ type Props = PropsWithChildren<{
 	accent?: Accent,
 	isSelected?: boolean,
 	isDisabled?: boolean,
-	onClick: (event: MouseEvent) => void,
+	isLoading?: boolean,
+	customClassNames?: string,
+	onClick: (event: MouseEvent<HTMLButtonElement>) => void,
 }>;
 
 const Button: FC<Props> = ({
 	accent = Accent.PRIMARY,
 	isSelected,
 	isDisabled,
+	isLoading,
+	customClassNames,
 	onClick,
 	children,
 }) => {
-	const className = clsx(styles.button, ACCENT_MIX[accent], {
+	const className = clsx(styles.button, customClassNames, ACCENT_MIX[accent], {
 		[styles.buttonSelected]: isSelected,
 	});
+
+	const handleClick = !isDisabled && !isLoading
+		? onClick
+		: undefined;
 
 	return (
 		<button
 			className={className}
 			disabled={isDisabled}
-			onClick={onClick}
+			onClick={handleClick}
 		>
 			{children}
 		</button>

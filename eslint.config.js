@@ -14,6 +14,7 @@ const SEVERITY = {
 };
 
 // config for ESLint 8.48.0
+/** @type {import('eslint').Linter.FlatConfig} */
 const commonConfig = {
 	languageOptions: {
 		ecmaVersion: 'latest',
@@ -145,7 +146,7 @@ const commonConfig = {
 		'max-nested-callbacks': SEVERITY.OFF,
 		'max-params': [SEVERITY.ERROR, 3],
 		'max-statements': SEVERITY.OFF,
-		'multiline-comment-style': SEVERITY.WARN,
+		'multiline-comment-style': SEVERITY.OFF,
 		'new-cap': SEVERITY.OFF,
 		'no-alert': SEVERITY.ERROR,
 		'no-array-constructor': SEVERITY.OFF,
@@ -230,7 +231,7 @@ const commonConfig = {
 		'no-ternary': SEVERITY.OFF,
 		'no-throw-literal': SEVERITY.ERROR,
 		'no-undef-init': SEVERITY.ERROR,
-		'no-undefined': SEVERITY.ERROR,
+		'no-undefined': SEVERITY.OFF,
 		'no-underscore-dangle': SEVERITY.OFF,
 		'no-unneeded-ternary': SEVERITY.ERROR,
 		'no-unused-expressions': [SEVERITY.ERROR, {
@@ -307,7 +308,7 @@ const commonConfig = {
 		'brace-style': [SEVERITY.ERROR, '1tbs',{
 			allowSingleLine: true,
 		}],
-		'comma-dangle': [SEVERITY.ERROR, 'only-multiline'],
+		'comma-dangle': [SEVERITY.ERROR, 'always-multiline'],
 		'comma-spacing': [SEVERITY.ERROR,{
 			before: false,
 			after: true,
@@ -388,7 +389,7 @@ const commonConfig = {
 		'object-property-newline': [SEVERITY.ERROR, {
 			allowAllPropertiesOnSameLine: true,
 		}],
-		'operator-linebreak': [SEVERITY.ERROR, 'after'],
+		'operator-linebreak': SEVERITY.OFF,
 		'padded-blocks': [SEVERITY.ERROR, 'never'],
 		'padding-line-between-statements': [
 			SEVERITY.ERROR,
@@ -436,18 +437,18 @@ const commonConfig = {
 		'yield-star-spacing': [SEVERITY.ERROR, 'after'],
 
 		// eslint-plugin-import
-		
+
 		// Helpful warnings
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/export.md
 		'import/export': SEVERITY.ERROR,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-deprecated.md
 		'import/no-deprecated': SEVERITY.WARN,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-empty-named-blocks.md
 		'import/no-empty-named-blocks': SEVERITY.ERROR,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-extraneous-dependencies.md
 		'import/no-extraneous-dependencies': [SEVERITY.ERROR, {
 			devDependencies: true,
@@ -455,16 +456,16 @@ const commonConfig = {
 			peerDependencies: true,
 			bundledDependencies: false,
 		}],
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-mutable-exports.md
 		'import/no-mutable-exports': SEVERITY.ERROR,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-named-as-default.md
 		'import/no-named-as-default': SEVERITY.ERROR,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-named-as-default-member.md
 		'import/no-named-as-default-member': SEVERITY.ERROR,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-unused-modules.md
 		// 'import/no-unused-modules': [SEVERITY.ERROR, {
 		// 	missingExports: true,
@@ -493,107 +494,107 @@ const commonConfig = {
 		'import/unambiguous': SEVERITY.ERROR,
 
 		// Static analysis
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/default.md
 		'import/default': SEVERITY.OFF,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/named.md
 		'import/named': SEVERITY.ERROR,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/namespace.md
 		'import/namespace': [SEVERITY.ERROR, {
 			allowComputed: false,
 		}],
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-absolute-path.md
 		'import/no-absolute-path': [SEVERITY.ERROR, {
 			esmodule: true,
 			commonjs: true,
 			amd: true,
 		}],
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-cycle.md
 		'import/no-cycle': SEVERITY.ERROR,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-dynamic-require.md
 		'import/no-dynamic-require': SEVERITY.OFF,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-internal-modules.md
 		'import/no-internal-modules': SEVERITY.OFF,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-relative-packages.md
 		'import/no-relative-packages': SEVERITY.OFF,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-relative-parent-imports.md
 		'import/no-relative-parent-imports': SEVERITY.OFF,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-restricted-paths.md
 		'import/no-restricted-paths': SEVERITY.OFF,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-self-import.md
 		'import/no-self-import': SEVERITY.ERROR,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-unresolved.md
 		'import/no-unresolved': SEVERITY.ERROR,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-useless-path-segments.md
 		'import/no-useless-path-segments': [SEVERITY.ERROR, {
 			noUselessIndex: true,
 		}],
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-webpack-loader-syntax.md
 		'import/no-webpack-loader-syntax': SEVERITY.ERROR,
 
 		// Style guide
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/consistent-type-specifier-style.md
 		'import/consistent-type-specifier-style': [SEVERITY.ERROR, 'prefer-top-level'],
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/dynamic-import-chunkname.md
 		'import/dynamic-import-chunkname': SEVERITY.OFF,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/exports-last.md
 		'import/exports-last': SEVERITY.OFF,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/extensions.md
 		'import/extensions': SEVERITY.OFF,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/first.md
 		'import/first': SEVERITY.ERROR,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/group-exports.md
 		'import/group-exports': SEVERITY.OFF,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/max-dependencies.md
 		'import/max-dependencies': SEVERITY.OFF,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/newline-after-import.md
 		'import/newline-after-import': [SEVERITY.ERROR, {
 			count: 2,
 			considerComments: true,
 		}],
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-anonymous-default-export.md
 		'import/no-anonymous-default-export': SEVERITY.OFF,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-default-export.md
 		'import/no-default-export': SEVERITY.OFF,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-duplicates.md
 		'no-duplicate-imports': SEVERITY.OFF,
 		'import/no-duplicates': [SEVERITY.ERROR, {
 			"prefer-inline": false,
 		}],
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-named-default.md
 		'import/no-named-default': SEVERITY.OFF,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-named-export.md
 		'import/no-named-export': SEVERITY.OFF,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-namespace.md
 		'import/no-namespace': SEVERITY.ERROR,
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-unassigned-import.md
 		'import/no-unassigned-import': [SEVERITY.ERROR, {
 			allow: [
@@ -603,7 +604,7 @@ const commonConfig = {
 				'**/*.styl',
 			],
 		}],
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/order.md
 		'import/order': [SEVERITY.ERROR, {
 			groups: [
@@ -619,12 +620,13 @@ const commonConfig = {
 			// 'newlines-between': 'always',
 			'newlines-between': 'always-and-inside-groups',
 		}],
-		
+
 		// https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/prefer-default-export.md
 		'import/prefer-default-export': SEVERITY.OFF,
 	},
 };
 
+/** @type {import('eslint').Linter.FlatConfig} */
 const jsConfig = {
 	files: ['**/*.js', '**/*.jsx'],
 	languageOptions: {
@@ -643,6 +645,7 @@ const jsConfig = {
 	},
 };
 
+/** @type {import('eslint').Linter.FlatConfig} */
 const tsConfig = {
 	files: ['**/*.ts', '**/*.tsx'],
 	languageOptions: {
@@ -663,7 +666,7 @@ const tsConfig = {
 		'@typescript-eslint': ts,
 		'import': imports,
 	},
-	settings: {	
+	settings: {
 		'import/parsers': {
 			'@typescript-eslint/parser': ['.ts', '.tsx'],
 		},
@@ -686,14 +689,14 @@ const tsConfig = {
 		'@typescript-eslint/class-methods-use-this': SEVERITY.ERROR,
 		'comma-dangle': SEVERITY.OFF,
 		'@typescript-eslint/comma-dangle': [SEVERITY.ERROR, {
-			arrays: 'only-multiline',
-			objects: 'only-multiline',
-			imports: 'only-multiline',
-			exports: 'only-multiline',
-			functions: 'only-multiline',
-			enums: 'only-multiline',
-			generics: 'only-multiline',
-			tuples: 'only-multiline',
+			arrays: 'always-multiline',
+			objects: 'always-multiline',
+			imports: 'always-multiline',
+			exports: 'always-multiline',
+			functions: 'always-multiline',
+			enums: 'always-multiline',
+			generics: 'always-multiline',
+			tuples: 'always-multiline',
 		}],
 		'comma-spacing': SEVERITY.OFF,
 		'@typescript-eslint/comma-spacing': [SEVERITY.ERROR,{
@@ -844,7 +847,7 @@ const tsConfig = {
 		}],
 
 		'@typescript-eslint/adjacent-overload-signatures': SEVERITY.ERROR,
-		
+
 		// https://typescript-eslint.io/rules/array-type
 		'@typescript-eslint/array-type': [SEVERITY.ERROR, {
 			default: 'generic',
@@ -907,7 +910,7 @@ const tsConfig = {
 		}],
 		'@typescript-eslint/member-ordering': SEVERITY.OFF,
 		'@typescript-eslint/method-signature-style': SEVERITY.OFF,
-		'@typescript-eslint/naming-convention': [SEVERITY.ERROR, 
+		'@typescript-eslint/naming-convention': [SEVERITY.ERROR,
 			{
 				selector: 'default',
 				format: ['camelCase'],
@@ -927,7 +930,11 @@ const tsConfig = {
 			{
 				selector: 'enumMember',
 				format: ['UPPER_CASE'],
-			}
+			},
+			{
+				selector: 'objectLiteralProperty',
+				format: ['camelCase', 'UPPER_CASE'],
+			},
 		],
 		'@typescript-eslint/no-base-to-string': [SEVERITY.ERROR, {
 			ignoredTypeNames: ['Error', 'RegExp', 'URL', 'URLSearchParams'],
@@ -964,10 +971,11 @@ const tsConfig = {
 			ignoreParameters: true,
 			ignoreProperties: true,
 		}],
-		'@typescript-eslint/no-invalid-void-type': [SEVERITY.ERROR, {
-			allowInGenericTypeArguments: true,
-			allowAsThisParameter: true,
-		}],
+		// Seems to be bugged: https://github.com/typescript-eslint/typescript-eslint/issues/6547
+		// '@typescript-eslint/no-invalid-void-type': [SEVERITY.ERROR, {
+		// 	allowInGenericTypeArguments: true,
+		// 	allowAsThisParameter: true,
+		// }],
 		'@typescript-eslint/no-meaningless-void-operator': [SEVERITY.ERROR, {
 			checkNever: true,
 		}],
@@ -1047,7 +1055,7 @@ const tsConfig = {
 			allowNullish: false,
 			allowNumberAndString: false,
 			allowRegExp: false,
-			skipCompoundAssignments: false,	
+			skipCompoundAssignments: false,
 		}],
 		'@typescript-eslint/restrict-template-expressions': [SEVERITY.ERROR, {
 			allowAny: false,
@@ -1078,7 +1086,7 @@ const tsConfig = {
 		'@typescript-eslint/unbound-method': [SEVERITY.ERROR, {
 			ignoreStatic: true,
 		}],
-		'@typescript-eslint/unified-signatures': SEVERITY.OFF,		
+		'@typescript-eslint/unified-signatures': SEVERITY.OFF,
 	},
 };
 
@@ -1088,6 +1096,7 @@ const ignoreConfig = {
 		'.vscode',
 		'**/*.config.js',
 		'**/*.config.ts',
+		'env.d.ts',
 	],
 };
 

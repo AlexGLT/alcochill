@@ -7,36 +7,75 @@ $text-color: #B6C2CF;
 	--backgroud-color: #22272B;
 	--border-color: #A6C5E229;
 
-	width: 10em;
-	height: 2.5em;
-	
-	padding: 0.5em;
+	display: flex;
+	flex-direction: column;
 
-	border: $border-width solid var(--border-color);
-	border-radius: $border-radius;
-	outline: none;
-
-	background-color: var(--backgroud-color);
+	gap: 0.25em;
 
 	font-size: 1em;
-	color: $text-color;
 
-	transition-duration: $transition-time;
-	transition-property: background-color, border-color, filter;
-
-	cursor: text;
-
-	&::placeholder {
-		color: $placeholder-text-color;
+	&__label {
+		font-size: 0.75em;
 	}
 
-	&:hover {
-		filter: brightness(1.2);
+	&__input-container {
+		border: $border-width solid var(--border-color);
+		border-radius: $border-radius;
+		outline: none;
+		overflow: hidden;
+
+		transition-duration: $transition-time;
+		transition-property: background-color, border-color, filter;
+
+		width: 10em;
+		height: 2.5em;
+
+		font-size: inherit;
+
+		&:hover {
+			filter: brightness(1.2);
+		}
+
+		&:focus-within {
+			--border-color: #85B8FF;
+
+			filter: brightness(1);
+		}
+
+		&_invalid {
+			&:not(&:focus-within) {
+				--border-color: #F15B50;
+			}
+		}
 	}
 
-	&:focus {
-		--border-color: #85B8FF;
+	&__input {
+		border: 0;
 
-		filter: brightness(1);
+		outline: none;
+
+		background-color: var(--backgroud-color);
+
+		color: $text-color;
+
+		height: 100%;
+		width: 100%;
+
+		padding: 0.5em;
+
+		font-size: inherit;
+		cursor: text;
+
+		&::placeholder {
+			color: $placeholder-text-color;
+		}
+	}
+
+	&__message {
+		font-size: 0.5em;
+
+		&_invalid {
+			color: #FD9891;
+		}
 	}
 }

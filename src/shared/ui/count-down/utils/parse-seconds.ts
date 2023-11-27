@@ -5,6 +5,7 @@ import {
 
 import type {ParsedTime} from '../types';
 
+
 const METRIC_CHAIN = [
 	TimeMetric.SECOND,
 	TimeMetric.MINUTE,

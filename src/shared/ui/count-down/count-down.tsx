@@ -1,62 +1,95 @@
-import {useEffect, useRef, useState} from 'react';
+import {Fragment, useCallback, useLayoutEffect, useMemo, useRef, useState} from 'react';
+import clsx from 'clsx';
+
+import {useStableCallback} from '@shared/libs/hooks';
 
 import {CounterBlock} from './ui';
 import {parseSeconds} from './utils';
-import {Direction} from './constants';
+import {Direction, TIME_IN_SECONDS, TimeMetric} from './constants';
 import styles from './count-down.module.scss';
 
-import type {FC} from 'react';
+import type {FC, ReactNode} from 'react';
 
 
-const DEFAULT_STARTING_POINT = 0;
-const DEFAULT_TIME_SPEED = 1;
-const DEFAULT_STEP = 1;
 const DEFAULT_TIMEOUT = 1000;
+const DEFAULT_UPDATE_FREQUENCY = 1;
 
 type Props = {
-	startingPoint?: number,
+	value: number,
 	direction?: Direction,
-	timeSpeed?: number,
-	step?: number,
-	shouldStop?: boolean,
+	updateFrequency?: number,
+	isWorking?: boolean,
+	maxTime?: number,
 };
 
 const CountDown: FC<Props> = ({
-	startingPoint = DEFAULT_STARTING_POINT,
+	value,
+	maxTime = TIME_IN_SECONDS.DAY,
 	direction = Direction.UP,
-	step = DEFAULT_STEP,
-	shouldStop = false,
-	timeSpeed = DEFAULT_TIME_SPEED,
+	updateFrequency = DEFAULT_UPDATE_FREQUENCY,
+	isWorking,
 }) => {
-	const [currentTime, setCurrentTime] = useState(startingPoint);
+	const [renderedValue, setRenderedValue] = useState(0);
+
+	const updateRenderedValue = useStableCallback(() => {
+		setRenderedValue(value % maxTime);
+	});
 
 	const timer = useRef<number>();
 
-	useEffect(() => {
-		if (!shouldStop) {
-			timer.current = setInterval(() => {
-				setCurrentTime((previousState) => previousState + step);
-			}, timeSpeed * DEFAULT_TIMEOUT);
+	useLayoutEffect(() => {
+		if (isWorking) {
+			timer.current = setInterval(updateRenderedValue, updateFrequency * DEFAULT_TIMEOUT);
 		}
 
 		return () => {
 			clearInterval(timer.current);
 		};
-	}, [shouldStop]);
+	}, [isWorking, updateFrequency, updateRenderedValue]);
 
-	const {
-		SECOND = 0,
-		MINUTE = 0,
-		HOUR = 0,
-	} = parseSeconds(currentTime);
+	const parsedTime = useMemo(() => {
+		return parseSeconds(renderedValue);
+	}, [renderedValue]);
+
+	const counterBlocks = useMemo(() => {
+		return [
+			TimeMetric.YEAR,
+			TimeMetric.MONTH,
+			TimeMetric.DAY,
+			TimeMetric.HOUR,
+			TimeMetric.MINUTE,
+			TimeMetric.SECOND,
+		].reduce((acc: Array<{ key: TimeMetric, node: ReactNode }>, timeMetric) => {
+			if (maxTime > TIME_IN_SECONDS[timeMetric]) {
+				acc.push(
+					{
+						key: timeMetric,
+						node: (
+							<CounterBlock {...{
+								key: timeMetric,
+								direction,
+								timeSpeed: updateFrequency,
+								currentValue: parsedTime[timeMetric] ?? 0,
+							}}/>
+						),
+					},
+				);
+			}
+
+			return acc;
+		}, []);
+	}, [parsedTime, maxTime, updateFrequency, direction]);
+
+	const classNames = clsx(styles.countDown);
 
 	return (
-		<div className={styles.countDown}>
-			<CounterBlock {...{direction, timeSpeed, currentValue: HOUR}} />
-			:
-			<CounterBlock {...{direction, timeSpeed, currentValue: MINUTE}} />
-			:
-			<CounterBlock {...{direction, timeSpeed, currentValue: SECOND}} />
+		<div className={classNames}>
+			{counterBlocks.map(({key, node}, index, array) => (
+				<Fragment key={key}>
+					{node}
+					{index !== array.length - 1 && ':'}
+				</Fragment>
+			))}
 		</div>
 	);
 };

@@ -1,0 +1,81 @@
+.elite-memes {
+	--background-image: none;
+
+	display: flex;
+	flex-direction: column;
+
+	height: 100%;
+	width: 100%;
+
+	overflow: hidden;
+
+	padding: 1em;
+	gap: 1em;
+
+	&_gallery-wrapper {
+		height: 100%;
+		overflow: hidden;
+	}
+
+	&_gallery {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		overflow: hidden;
+
+		height: 100%;
+	}
+
+	&_img-container {
+		position: relative;
+
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		border: 0.25em solid #3a3a3a;
+		border-radius: 0.25em;
+
+		overflow: hidden;
+
+		width: 100%;
+		height: 100%;
+	}
+
+	&_img {
+		object-fit: contain;
+
+		width: 100%;
+		height: 100%;
+		max-width: 100%;
+		max-height: 100%;
+
+		z-index: 5;
+	}
+
+	&_gallery-background {
+		position: absolute;
+
+		background-image: var(--background-image);
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
+
+		width: 100%;
+		height: 100%;
+
+		filter: blur(0.5em);
+	}
+
+	&_controllers {
+		display: flex;
+		justify-content: space-evenly;
+		align-items: center;
+
+		width: 400px;
+
+		gap: 1em;
+		margin: auto;
+	}
+}
