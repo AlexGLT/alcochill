@@ -1,3 +1,3 @@
-export const isNumber = (arg: unknown): arg is number => (
-	typeof arg === 'number'
-);
+export const isNumber = (arg: unknown): arg is number => {
+	return typeof arg === 'number';
+};

@@ -13,6 +13,7 @@ const DEFAULT_VALUE = '';
 const DEFAULT_INVALID_MESSAGE = 'Incorrect, try again!';
 
 type Props = InputProps & {
+	initialValue?: string | number,
 	value?: string | number,
 	type?: Type,
 	label?: ReactNode,
@@ -25,12 +26,13 @@ const TextField: FC<Props> = ({
 	placeholder = DEFAULT_VALUE,
 	invalidMessage = DEFAULT_INVALID_MESSAGE,
 	value: externalValue,
+	initialValue = '',
 	label,
 	isInvalid,
 	onChange,
 	...restProps
 }) => {
-	const [value, setValue] = useState('');
+	const [value, setValue] = useState(initialValue);
 
 	useLayoutEffect(() => {
 		if (typeof externalValue === 'string' || typeof externalValue === 'number') {

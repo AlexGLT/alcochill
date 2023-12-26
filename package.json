@@ -10,6 +10,12 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"@atlaskit/checkbox": "^13.0.1",
+		"@atlaskit/css-reset": "^6.6.1",
+		"@atlaskit/dropdown-menu": "12.1.5",
+		"@atlaskit/icon": "^22.0.0",
+		"@atlaskit/spinner": "^16.0.0",
+		"@atlaskit/tokens": "^1.29.0",
 		"clsx": "^2.0.0",
 		"effector": "^22.8.7",
 		"effector-react": "^22.5.4",

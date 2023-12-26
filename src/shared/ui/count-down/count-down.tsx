@@ -40,6 +40,8 @@ const CountDown: FC<Props> = ({
 	useLayoutEffect(() => {
 		if (isWorking) {
 			timer.current = setInterval(updateRenderedValue, updateFrequency * DEFAULT_TIMEOUT);
+		} else {
+			setInterval(updateRenderedValue, updateFrequency * DEFAULT_TIMEOUT);
 		}
 
 		return () => {
@@ -59,7 +61,7 @@ const CountDown: FC<Props> = ({
 			TimeMetric.HOUR,
 			TimeMetric.MINUTE,
 			TimeMetric.SECOND,
-		].reduce((acc: Array<{ key: TimeMetric, node: ReactNode }>, timeMetric) => {
+		].reduce((acc: Array<{key: TimeMetric, node: ReactNode}>, timeMetric) => {
 			if (maxTime > TIME_IN_SECONDS[timeMetric]) {
 				acc.push(
 					{

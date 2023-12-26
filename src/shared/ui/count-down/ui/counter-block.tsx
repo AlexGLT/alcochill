@@ -10,12 +10,16 @@ import type {Direction} from '../constants';
 const BOX_VALUE_LIMIT = 10;
 
 type Props = {
-	currentValue: number,
+	currentValue: number | undefined,
 	direction: Direction,
 	timeSpeed: number,
 };
 
-export const CounterBlock: FC<Props> = ({currentValue, direction, timeSpeed}) => {
+export const CounterBlock: FC<Props> = ({
+	currentValue = 0,
+	direction,
+	timeSpeed,
+}) => {
 	const rightPart = currentValue % BOX_VALUE_LIMIT;
 	const leftPart = Math.floor(currentValue / BOX_VALUE_LIMIT) % BOX_VALUE_LIMIT;
 

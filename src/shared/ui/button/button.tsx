@@ -25,7 +25,7 @@ type Props = PropsWithChildren<{
 	isDisabled?: boolean,
 	isLoading?: boolean,
 	customClassNames?: string,
-	onClick: (event: MouseEvent<HTMLButtonElement>) => void,
+	onClick?: (event: MouseEvent<HTMLButtonElement>) => void,
 }>;
 
 const Button: FC<Props> = ({

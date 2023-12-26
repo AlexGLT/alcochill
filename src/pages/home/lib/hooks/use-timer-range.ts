@@ -2,7 +2,6 @@ import {useState} from 'react';
 import {useStore} from 'effector-react';
 
 import {
-	$canBeStarted,
 	$maxTime,
 	$minTime,
 	changeMaxTime,
@@ -14,8 +13,7 @@ import {useStableCallback} from '@shared/libs';
 import type {ChangeEvent} from 'react';
 
 
-type Params = {
-	canBeStarted: boolean,
+type ReturnParams = {
 	isMinTimeInputInvalid: boolean,
 	isMaxTimeInputInvalid: boolean,
 	minTimeInMinutes: number,
@@ -24,15 +22,13 @@ type Params = {
 	updateMaxTime: (event: ChangeEvent<HTMLInputElement>) => void,
 };
 
-export const useTimeRange = (): Params => {
-	const canBeStarted = useStore($canBeStarted);
+export const useTimeRange = (): ReturnParams => {
 	const minTimeInMinutes = useStore($minTime);
 	const maxTimeInMinutes = useStore($maxTime);
 
 	const [isMinTimeInputInvalid, setIsMinTimeInputInvalid] = useState(false);
 	const [isMaxTimeInputInvalid, setIsMaxTimeInputInvalid] = useState(false);
 
-	// TODO: add custom validations (for example Jira type)
 	const updateMinTime = useStableCallback((event: ChangeEvent<HTMLInputElement>): void => {
 		const value = event.target.value;
 
@@ -58,7 +54,6 @@ export const useTimeRange = (): Params => {
 	});
 
 	return {
-		canBeStarted,
 		isMinTimeInputInvalid,
 		isMaxTimeInputInvalid,
 		minTimeInMinutes,

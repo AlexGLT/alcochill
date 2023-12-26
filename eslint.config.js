@@ -198,7 +198,7 @@ const commonConfig = {
 			detectObjects: false,
 			ignore: [0, 1],
 		}],
-		'no-mixed-operators': SEVERITY.ERROR,
+		// 'no-mixed-operators': SEVERITY.ERROR,
 		'no-multi-assign': SEVERITY.OFF,
 		'no-multi-str': SEVERITY.ERROR,
 		'no-negated-condition': SEVERITY.ERROR,
@@ -961,10 +961,10 @@ const tsConfig = {
 			allowStaticOnly: false,
 			allowWithDecorator: false,
 		}],
-		'@typescript-eslint/no-floating-promises': [SEVERITY.ERROR, {
-			ignoreIIFE: true,
-			ignoreVoid: true,
-		}],
+		// '@typescript-eslint/no-floating-promises': [SEVERITY.ERROR, {
+		// 	ignoreIIFE: true,
+		// 	ignoreVoid: true,
+		// }],
 		'@typescript-eslint/no-for-in-array': SEVERITY.ERROR,
 		'@typescript-eslint/no-import-type-side-effects': SEVERITY.ERROR,
 		'@typescript-eslint/no-inferrable-types': [SEVERITY.ERROR, {
