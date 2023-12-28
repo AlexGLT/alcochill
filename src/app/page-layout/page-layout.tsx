@@ -30,8 +30,11 @@ export const PageLayout: FC<Props> = ({
 	return (
 		<div className={classNames}>
 			<Header />
+
 			{hasAlcoTimer && <TimerPopover canBeDisplayed={canTimerPopoverBeDisplayed} />}
+
 			{children}
+
 		</div>
 	);
 };
