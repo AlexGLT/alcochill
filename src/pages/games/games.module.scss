@@ -1,0 +1,102 @@
+.games {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+
+	height: 100%;
+	width: 100%;
+
+	padding: 1em;
+	padding-top: 5%;
+
+	&__main-content {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+
+		width: 100%;
+		max-width: 1000px;
+		// align-items: center;
+	}
+
+	&__player-addition-container {
+		display: flex;
+		flex-direction: column;
+
+		gap: 1em;
+
+		width: 30%;
+	}
+
+	&__player-add-controller {
+		display: flex;
+		gap: 0.5em;
+
+		&:global(> button) {
+			min-width: initial;
+		}
+	}
+
+	&__card {
+		padding: 0.5em;
+
+		background-color: #22272B;
+	}
+
+	&__players-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5em;
+	}
+
+	&__player {
+		display: flex;
+		justify-content: space-between;
+
+		padding: 0.25em;
+		gap: 0.5em;
+		background-color: #3a3a3a;
+
+		border-radius: 0.25em;
+	}
+
+	&__player-caption {
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	&__player-remove-button {
+		padding: 0;
+		border-radius: 0.125em;
+
+		min-width: initial;
+		min-height: initial;
+	}
+
+	&__controls {
+		display: flex;
+		flex-direction: column;
+
+		align-self: center;
+
+		gap: 1em;
+	}
+
+	&__teams-list {
+		display: flex;
+		flex-direction: column;
+		gap: 1em;
+
+		width: 30%;
+	}
+
+	&__team {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75em;
+
+		&:global(> h2) {
+			font-size: 1.25em;
+		}
+	}
+}

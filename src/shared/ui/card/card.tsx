@@ -14,7 +14,9 @@ const Card: FC<Props> = ({customClasses, customStyles, children}) => {
 	const className = clsx(styles.card, customClasses);
 
 	return (
-		<div className={className} style={customStyles}>{children}</div>
+		<div className={className} style={customStyles}>
+			{children}
+		</div>
 	);
 };
 

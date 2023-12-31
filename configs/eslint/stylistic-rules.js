@@ -34,7 +34,10 @@ export const stylisticRules = {
 		}],
 
 		// https://eslint.style/rules/default/block-spacing
-		'stylistic/block-spacing': [SEVERITY.ERROR, 'always'],
+		'stylistic/block-spacing': SEVERITY.OFF,
+
+		// TODO: works incorrect inside generic
+		// 'stylistic/block-spacing': [SEVERITY.ERROR, 'always'],
 
 		// https://eslint.style/rules/default/brace-style
 		'stylistic/brace-style': [SEVERITY.ERROR, '1tbs', {
@@ -294,17 +297,20 @@ export const stylisticRules = {
 		}],
 
 		// https://eslint.style/rules/default/no-extra-parens
-		'stylistic/no-extra-parens': [SEVERITY.ERROR, 'all', {
-			conditionalAssign: false,
-			returnAssign: false,
-			nestedBinaryExpressions: false,
-			ternaryOperandBinaryExpressions: false,
-			ignoreJSX: 'multi-line',
-			enforceForArrowConditionals: false,
-			enforceForSequenceExpressions: false,
-			enforceForNewInMemberExpressions: false,
-			enforceForFunctionPrototypeMethods: false,
-		}],
+		'stylistic/no-extra-parens': SEVERITY.OFF,
+
+		// NOT FLEX ENOUGH
+		// 'stylistic/no-extra-parens': [SEVERITY.ERROR, 'all', {
+		// 	conditionalAssign: false,
+		// 	returnAssign: false,
+		// 	nestedBinaryExpressions: false,
+		// 	ternaryOperandBinaryExpressions: false,
+		// 	ignoreJSX: 'multi-line',
+		// 	enforceForArrowConditionals: false,
+		// 	enforceForSequenceExpressions: false,
+		// 	enforceForNewInMemberExpressions: false,
+		// 	enforceForFunctionPrototypeMethods: false,
+		// }],
 
 		// https://eslint.style/rules/default/no-extra-semi
 		'stylistic/no-extra-semi': SEVERITY.ERROR,
@@ -340,9 +346,7 @@ export const stylisticRules = {
 		}],
 
 		// https://eslint.style/rules/default/no-tabs
-		'stylistic/no-tabs': [SEVERITY.ERROR, {
-			allowIndentationTabs: true,
-		}],
+		'stylistic/no-tabs': SEVERITY.OFF,
 
 		// https://eslint.style/rules/default/no-trailing-spaces
 		'stylistic/no-trailing-spaces': [SEVERITY.ERROR, {
@@ -479,6 +483,12 @@ export const stylisticRules = {
 		'stylistic/type-annotation-spacing': [SEVERITY.ERROR, {
 			before: false,
 			after: true,
+			overrides: {
+				arrow: {
+					before: true,
+					after: true,
+				},
+			},
 		}],
 
 		// https://eslint.style/rules/default/type-generic-spacing

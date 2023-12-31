@@ -3,6 +3,7 @@ import {NavLink} from 'react-router-dom';
 import clsx from 'clsx';
 
 import homePage from '@pages/home';
+import gamesPage from '@pages/games';
 import eliteMemesPage from '@pages/elite-memes';
 
 import styles from './header.module.scss';
@@ -31,6 +32,16 @@ export const Header: FC<Props> = ({}) => {
 					{homePage.name}
 				</NavLink>
 			</nav>
+
+			<nav>
+				<NavLink
+					to={gamesPage.path}
+					className={getNavLinkStyles}
+				>
+					{gamesPage.name}
+				</NavLink>
+			</nav>
+
 			<nav>
 				<NavLink
 					to={eliteMemesPage.path}
