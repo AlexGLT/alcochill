@@ -5,6 +5,7 @@ export {
 	$maxTime,
 	$chosenSounds,
 	$signalHistory,
+	$isInDangerZone,
 	start,
 	stop,
 	changeMinTime,

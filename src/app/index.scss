@@ -6,7 +6,6 @@
 
 	color-scheme: light dark;
 	color: rgba(255, 255, 255, 0.87);
-	background-color: lighten(#111111, 7%);
 
 	font-synthesis: none;
 	text-rendering: optimizeLegibility;
@@ -19,6 +18,32 @@ html {
 	font-size: 24px;
 }
 
+body {
+	position: relative;
+	background-color: lighten(#111111, 7%);
+	overflow: hidden;
+}
+
 * {
 	box-sizing: border-box;
+}
+
+@keyframes danger-zone {
+	0% {
+		left: -100px;
+	}
+
+	100% {
+		left: 100%;
+	}
+}
+
+@keyframes danger-zone-2 {
+	0% {
+		left: -150px;
+	}
+
+	100% {
+		left: 100%;
+	}
 }

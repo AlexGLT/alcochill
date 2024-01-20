@@ -1,4 +1,10 @@
-import {Fragment, useCallback, useLayoutEffect, useMemo, useRef, useState} from 'react';
+import {
+	Fragment,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
 import clsx from 'clsx';
 
 import {useStableCallback} from '@shared/libs/hooks';
@@ -20,6 +26,7 @@ type Props = {
 	updateFrequency?: number,
 	isWorking?: boolean,
 	maxTime?: number,
+	isInDangerZone?: boolean,
 };
 
 const CountDown: FC<Props> = ({
@@ -28,6 +35,7 @@ const CountDown: FC<Props> = ({
 	direction = Direction.UP,
 	updateFrequency = DEFAULT_UPDATE_FREQUENCY,
 	isWorking,
+	isInDangerZone,
 }) => {
 	const [renderedValue, setRenderedValue] = useState(0);
 
@@ -61,25 +69,27 @@ const CountDown: FC<Props> = ({
 			TimeMetric.HOUR,
 			TimeMetric.MINUTE,
 			TimeMetric.SECOND,
-		].reduce((acc: Array<{key: TimeMetric, node: ReactNode}>, timeMetric) => {
-			if (maxTime > TIME_IN_SECONDS[timeMetric]) {
-				acc.push(
-					{
-						key: timeMetric,
-						node: (
-							<CounterBlock {...{
+		]
+			.filter((timeMetric) => maxTime > TIME_IN_SECONDS[timeMetric])
+			.reduce((acc: Array<{key: TimeMetric, node: ReactNode}>, timeMetric, index) => {
+				acc.push({
+					key: timeMetric,
+					node: (
+						<CounterBlock
+							{...{
 								key: timeMetric,
+								index: index * 2,
 								direction,
 								timeSpeed: updateFrequency,
 								currentValue: parsedTime[timeMetric] ?? 0,
-							}}/>
-						),
-					},
-				);
-			}
+								isInDangerZone,
+							}}
+						/>
+					),
+				});
 
-			return acc;
-		}, []);
+				return acc;
+			}, []);
 	}, [parsedTime, maxTime, updateFrequency, direction]);
 
 	const classNames = clsx(styles.countDown);
@@ -89,6 +99,7 @@ const CountDown: FC<Props> = ({
 			{counterBlocks.map(({key, node}, index, array) => (
 				<Fragment key={key}>
 					{node}
+
 					{index !== array.length - 1 && ':'}
 				</Fragment>
 			))}

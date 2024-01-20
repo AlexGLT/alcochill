@@ -1,4 +1,5 @@
 import {useState, useLayoutEffect, useRef} from 'react';
+import {useStore} from 'effector-react';
 import clsx from 'clsx';
 
 import {CSSVariable} from '../constants';
@@ -13,9 +14,17 @@ type Props = {
 	finalTime?: number,
 	direction: Direction,
 	timeSpeed: number,
+	animationDelay: string,
+	isInDangerZone?: boolean,
 };
 
-export const CounterBox: FC<Props> = ({currentValue, direction, timeSpeed}: Props) => {
+export const CounterBox: FC<Props> = ({
+	currentValue,
+	direction,
+	timeSpeed,
+	animationDelay,
+	isInDangerZone,
+}: Props) => {
 	const [mountedValue, setMountedValue] = useState(currentValue);
 	const previousValue = useRef(currentValue);
 
@@ -36,13 +45,18 @@ export const CounterBox: FC<Props> = ({currentValue, direction, timeSpeed}: Prop
 
 	const customStyle = {
 		[CSSVariable.TIME_SPEED]: timeSpeed,
+		'--animation-delay': animationDelay,
 	};
 
+	// @ts-expect-error WHY: temp
+	const className = clsx(styles.countDownBox, window.dangerZonesEnabled[window.dangerZones.ROTATE] && isInDangerZone && styles.countDownBoxDanger);
+
 	return (
-		<div className={styles.countDownBox} style={customStyle}>
+		<div className={className} style={customStyle}>
 			<div key={currentValue} className={currentBoxClassName}>
 				{currentValue}
 			</div>
+
 			{previousValue.current !== currentValue && (
 				<div key={previousValue.current} className={previousBoxClassName}>
 					{previousValue.current}

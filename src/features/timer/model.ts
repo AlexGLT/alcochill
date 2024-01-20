@@ -64,7 +64,6 @@ export const $maxTime = createStore<number>(Number(localStorage.getItem(PREVIOUS
 
 export const $chosenSounds = createStore<Array<Sound>>(
 	localStorage.getItem(CHOSEN_SOUNDS)
-
 		// @ts-expect-error WHY: too lazy
 		? JSON.parse(localStorage.getItem(CHOSEN_SOUNDS))
 		: [SOUND.BELL],
@@ -135,6 +134,10 @@ const $signalValue = createStore<number | null>(null)
 	.on(stop, () => null);
 
 export const clearSignalsHistory = createEvent();
+
+export const $isInDangerZone = combine($intervalValue, $minTime, (intervalValue, minValue) => {
+	return !!(minValue && intervalValue) && intervalValue >= (minValue * 60);
+});
 
 // TODO: optimize read from localStorage
 export const $signalHistory = createStore<Array<string>>((() => {

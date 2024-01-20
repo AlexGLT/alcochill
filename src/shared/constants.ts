@@ -68,3 +68,26 @@ export const SOUND_LABEL: Record<Sound, string> = {
 	[SOUND.SUSHI]: 'Sushi',
 	[SOUND.CLASSIC]: 'Classic',
 };
+
+// @ts-expect-error WHY: temp
+window.dangerZones = {
+	ROTATE: 'ROTATE',
+	LINE: 'LINE',
+	BACKGROUND: 'BACKGROUND',
+};
+
+// @ts-expect-error WHY: temp
+window.dangerZonesEnabled = {
+	ROTATE: true,
+	LINE: false,
+	BACKGROUND: false,
+};
+
+// @ts-expect-error WHY: temp
+window.toggleDangerZone = (dangerZone: string) => {
+	// @ts-expect-error WHY: temp
+	if (dangerZone in window.dangerZones) {
+		// @ts-expect-error WHY: temp
+		window.dangerZonesEnabled[dangerZone] = !window.dangerZonesEnabled[dangerZone];
+	}
+};

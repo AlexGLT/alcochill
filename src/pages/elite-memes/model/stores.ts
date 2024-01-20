@@ -29,15 +29,13 @@ export const $list = createStore<Array<string>>([])
 		return [];
 	});
 
-export const $currentMemeLink = combine($list, $index, (currentList, currentIndex) => (
-	isNumber(currentIndex) ? currentList[currentIndex] : undefined
-));
+export const $currentMemeLink = combine($list, $index, (currentList, currentIndex) => {
+	return isNumber(currentIndex) ? currentList[currentIndex] : undefined;
+});
 
 sample({
 	source: $list,
 	clock: $index,
-	filter: (currentList, currentIndex) => (
-		isNumber(currentIndex) && !currentList[currentIndex]
-	),
+	filter: (currentList, currentIndex) => isNumber(currentIndex) && !currentList[currentIndex],
 	target: fetchRandomMemeFx,
 });
