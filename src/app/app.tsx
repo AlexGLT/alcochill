@@ -11,7 +11,7 @@ import type {FC} from 'react';
 
 
 export const App: FC = () => {
-	const [showSnow, setShowSnow] = useState(true);
+	const [showSnow, setShowSnow] = useState(false);
 
 	useLayoutEffect(() => {
 		// @ts-expect-error WHY: I'm too lazy to create view for it

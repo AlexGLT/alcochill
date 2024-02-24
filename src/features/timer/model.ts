@@ -188,8 +188,12 @@ sample({
 	},
 });
 
-requestSignal.watch((): void => {
+requestSignal.watch((previousSignal): void => {
 	const audio = $signalAudio.getState();
+
+	if (previousSignal === undefined) {
+		audio.src = '/audio/welcome.mp3';
+	}
 
 	audio.load();
 	void audio.play();

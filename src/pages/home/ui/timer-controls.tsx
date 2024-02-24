@@ -24,7 +24,7 @@ export const TimerControls: FC = () => {
 		toggleTimer,
 	} = useTimerState();
 
-	const startButtonCaption = isStarted ? 'Stop :(' : 'Start :)';
+	const startButtonCaption = isStarted ? 'Stop' : 'Start';
 
 	const isStartButtonDisabled = (
 		isMinTimeInputInvalid ||

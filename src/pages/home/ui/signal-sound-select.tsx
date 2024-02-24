@@ -1,4 +1,3 @@
-
 import DropdownMenu, {DropdownItem, DropdownItemGroup} from '@atlaskit/dropdown-menu';
 import {Checkbox} from '@atlaskit/checkbox';
 import {Box, Flex} from '@atlaskit/primitives';
@@ -30,44 +29,49 @@ export const SignalSoundSelect: FC = () => {
 		stopSound,
 		testVolume,
 		checkChosenSound,
-		apply,
-		cancel,
+		selectAll,
+		// apply,
+		// cancel,
 	} = useSoundSignal();
 
 	const [isOpen, setIsOpen] = useState(false);
 
 	const onOpenChange = (args: {isOpen: boolean}): void => {
 		if (!args.isOpen) {
-			cancel();
+			// cancel();
 		}
 
 		setIsOpen(args.isOpen);
 	};
 
-	const onApplyClick = (): void => {
-		apply();
+	// const onApplyClick = (): void => {
+	// 	apply();
 
-		setIsOpen(false);
-	};
+	// 	setIsOpen(false);
+	// };
 
-	const onCancelClick = (): void => {
-		cancel();
+	// const onCancelClick = (): void => {
+	// 	cancel();
 
-		setIsOpen(false);
-	};
+	// 	setIsOpen(false);
+	// };
 
-	const onSelectAllClick = ({target: {checked}}: ChangeEvent<HTMLInputElement>): void => {
-		ALL_SOUNDS.forEach((sound) => {
-			checkChosenSound(sound, checked);
-		});
-	};
+	// const onSelectAllClick = ({target: {checked}}: ChangeEvent<HTMLInputElement>): void => {
+	// 	ALL_SOUNDS.forEach((sound) => {
+	// 		checkChosenSound(sound, checked);
+	// 	});
+	// };
 
 	const onCheckboxChange = ({target: {name, checked}}: ChangeEvent<HTMLInputElement>): void => {
 		checkChosenSound(name, checked);
 	};
 
 	return (
-		<Flex direction="column" justifyContent="space-evenly" alignItems="center" gap="space.200">
+		<Flex
+			direction="column"
+			justifyContent="space-evenly"
+			alignItems="center"
+			gap="space.200">
 			<Button onClick={testVolume}>
 				Test volume
 			</Button>
@@ -75,36 +79,41 @@ export const SignalSoundSelect: FC = () => {
 			<DropdownMenu trigger="Sounds" isOpen={isOpen} onOpenChange={onOpenChange}>
 				<div style={{maxHeight: 250, fontSize: '0.65em', lineHeight: 'normal'}}>
 					<DropdownItemGroup>
-						<DropdownItem component={({children}) => (
-							<div style={{
-								display: 'flex',
-								padding: 8,
-								paddingRight: 10,
-							}}>
-								{children}
-							</div>
-						)}>
+						<DropdownItem
+							component={({children}) => (
+								<div
+									style={{
+										display: 'flex',
+										padding: 8,
+										paddingRight: 10,
+									}}>
+									{children}
+								</div>
+							)}>
 							<Flex justifyContent="space-between">
 								<Checkbox
 									name="selectAll"
 									isChecked={chosenSounds.size === ALL_SOUNDS.length}
 									label="Select All"
 									size="large"
-									onChange={onSelectAllClick}
+									onChange={selectAll}
 								/>
 							</Flex>
 						</DropdownItem>
 
 						{ALL_SOUNDS.map((sound) => (
-							<DropdownItem key={sound} component={({children}) => (
-								<div style={{
-									display: 'flex',
-									padding: 8,
-									paddingRight: 10,
-								}}>
-									{children}
-								</div>
-							)}>
+							<DropdownItem
+								key={sound}
+								component={({children}) => (
+									<div
+										style={{
+											display: 'flex',
+											padding: 8,
+											paddingRight: 10,
+										}}>
+										{children}
+									</div>
+								)}>
 								<Flex justifyContent="space-between" alignItems="center" gap="space.050">
 									<Checkbox
 										name={sound}
@@ -114,19 +123,21 @@ export const SignalSoundSelect: FC = () => {
 										onChange={onCheckboxChange}
 									/>
 
-									{nowPlaying === sound
-										? <div onClick={stopSound}><PauseIcon label="" size="medium" /></div>
-										: (
-											<div onClick={() => playSound(sound)}>
-												<PlayIcon label="" size="medium" />
-											</div>
-										)}
+									{nowPlaying === sound ? (
+										<div onClick={stopSound}>
+											<PauseIcon label="" size="medium" />
+										</div>
+									) : (
+										<div onClick={() => playSound(sound)}>
+											<PlayIcon label="" size="medium" />
+										</div>
+									)}
 
 								</Flex>
 							</DropdownItem>
 						))}
 
-						<div style={{fontSize: '1em'}}>
+						{/* <div style={{fontSize: '1em'}}>
 							<Flex justifyContent="space-evenly">
 								<Button
 									accent={Accent.SUCCESS}
@@ -143,7 +154,7 @@ export const SignalSoundSelect: FC = () => {
 									Cancel
 								</Button>
 							</Flex>
-						</div>
+						</div> */}
 					</DropdownItemGroup>
 				</div>
 			</DropdownMenu>

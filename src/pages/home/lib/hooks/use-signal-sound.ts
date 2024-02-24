@@ -1,4 +1,9 @@
-import {useCallback, useLayoutEffect, useRef, useState} from 'react';
+import {
+	useCallback,
+	useLayoutEffect,
+	useRef,
+	useState,
+} from 'react';
 
 import {useStore} from 'effector-react';
 
@@ -9,10 +14,15 @@ import {
 } from '@features/timer';
 
 import {useStableCallback} from '@shared/libs';
+import {SOUND} from '@shared/constants';
 import {takeRandomArrayElement} from '@features/timer/lib/utils';
+
+import type {ChangeEvent} from 'react';
 
 import type {Sound} from '@shared/constants';
 
+
+const ALL_SOUNDS = Object.values(SOUND);
 
 type ReturnParams = {
 	isStarted: boolean,
@@ -22,8 +32,8 @@ type ReturnParams = {
 	stopSound: () => void,
 	testVolume: () => void,
 	checkChosenSound: (sound: Sound, value: boolean) => void,
-	apply: () => void,
-	cancel: () => void,
+	// apply: () => void,
+	// cancel: () => void,
 };
 
 export const useSoundSignal = (): ReturnParams => {
@@ -40,20 +50,20 @@ export const useSoundSignal = (): ReturnParams => {
 		});
 	}, []);
 
-	const [chosenSounds, setChosenSounds] = useState<Set<Sound>>(new Set(storedChosenSounds));
+	// const [chosenSounds, setChosenSounds] = useState<Set<Sound>>(new Set(storedChosenSounds));
+
+	const chosenSounds = new Set(storedChosenSounds);
 
 	const checkChosenSound = useStableCallback((sound: Sound, value: boolean): void => {
-		setChosenSounds((previousChosenSounds) => {
-			const newChosenSounds = new Set(previousChosenSounds);
+		const newChosenSounds = new Set(storedChosenSounds);
 
-			if (value) {
-				newChosenSounds.add(sound);
-			} else {
-				newChosenSounds.delete(sound);
-			}
+		if (value) {
+			newChosenSounds.add(sound);
+		} else {
+			newChosenSounds.delete(sound);
+		}
 
-			return newChosenSounds;
-		});
+		changeChosenSounds(Array.from(newChosenSounds.values()));
 	});
 
 	const playSound = useCallback((sound: Sound): void => {
@@ -85,13 +95,21 @@ export const useSoundSignal = (): ReturnParams => {
 		void audio.play();
 	});
 
-	const apply = useStableCallback(() => {
-		changeChosenSounds(Array.from(chosenSounds.values()));
+	const selectAll = useStableCallback(({target: {checked}}: ChangeEvent<HTMLInputElement>): void => {
+		if (checked) {
+			changeChosenSounds(ALL_SOUNDS);
+		} else {
+			changeChosenSounds([]);
+		}
 	});
 
-	const cancel = useStableCallback(() => {
-		setChosenSounds(new Set(storedChosenSounds));
-	});
+	// const apply = useStableCallback(() => {
+	// 	changeChosenSounds(Array.from(chosenSounds.values()));
+	// });
+
+	// const cancel = useStableCallback(() => {
+	// 	setChosenSounds(new Set(storedChosenSounds));
+	// });
 
 	return {
 		nowPlaying,
@@ -101,7 +119,8 @@ export const useSoundSignal = (): ReturnParams => {
 		stopSound,
 		testVolume,
 		checkChosenSound,
-		apply,
-		cancel,
+		selectAll,
+		// apply,
+		// cancel,
 	};
 };

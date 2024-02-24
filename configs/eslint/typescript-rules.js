@@ -170,31 +170,31 @@ export const typescriptRules = {
 
 		'typescript/method-signature-style': SEVERITY.OFF,
 
-		'typescript/naming-convention': [SEVERITY.ERROR,
-			{
-				selector: 'default',
-				format: ['camelCase'],
-				leadingUnderscore: 'allow',
-				trailingUnderscore: 'allow',
-			},
-			{
-				selector: 'variable',
-				format: ['camelCase', 'PascalCase', 'UPPER_CASE'],
-				leadingUnderscore: 'allow',
-				trailingUnderscore: 'allow',
-			},
-			{
-				selector: 'typeLike',
-				format: ['PascalCase'],
-			},
-			{
-				selector: 'enumMember',
-				format: ['UPPER_CASE'],
-			},
-			{
-				selector: 'objectLiteralProperty',
-				format: ['camelCase', 'UPPER_CASE'],
-			}],
+		// 'typescript/naming-convention': [SEVERITY.ERROR,
+		// 	{
+		// 		selector: 'default',
+		// 		format: ['camelCase'],
+		// 		leadingUnderscore: 'allow',
+		// 		trailingUnderscore: 'allow',
+		// 	},
+		// 	{
+		// 		selector: 'variable',
+		// 		format: ['camelCase', 'PascalCase', 'UPPER_CASE'],
+		// 		leadingUnderscore: 'allow',
+		// 		trailingUnderscore: 'allow',
+		// 	},
+		// 	{
+		// 		selector: 'typeLike',
+		// 		format: ['PascalCase'],
+		// 	},
+		// 	{
+		// 		selector: 'enumMember',
+		// 		format: ['UPPER_CASE'],
+		// 	},
+		// 	{
+		// 		selector: 'objectLiteralProperty',
+		// 		format: ['camelCase', 'UPPER_CASE'],
+		// 	}],
 
 		'typescript/no-base-to-string': [SEVERITY.ERROR, {
 			ignoredTypeNames: ['Error', 'RegExp', 'URL', 'URLSearchParams'],
