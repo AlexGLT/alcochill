@@ -32,6 +32,7 @@ type ReturnParams = {
 	stopSound: () => void,
 	testVolume: () => void,
 	checkChosenSound: (sound: Sound, value: boolean) => void,
+	selectAll: any,
 	// apply: () => void,
 	// cancel: () => void,
 };
