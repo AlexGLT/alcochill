@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc && vite build",
-		"lint": "eslint alcochill --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+		"lint": "eslint .",
 		"preview": "vite preview"
 	},
 	"dependencies": {
@@ -16,6 +16,7 @@
 		"@atlaskit/icon": "^22.0.0",
 		"@atlaskit/spinner": "^16.0.0",
 		"@atlaskit/tokens": "^1.29.0",
+		"@floating-ui/react": "^0.26.6",
 		"clsx": "^2.0.0",
 		"effector": "^22.8.7",
 		"effector-react": "^22.5.4",
