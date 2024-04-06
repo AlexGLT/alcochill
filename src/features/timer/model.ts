@@ -7,6 +7,7 @@ import {
 
 import {isNumber, isString} from '@shared/libs';
 import {SOUND} from '@shared/constants';
+import {LocalStorage} from '@shared/storages';
 
 import {chooseRandomSecondFromInterval, takeRandomArrayElement} from './lib/utils';
 
@@ -46,29 +47,31 @@ window.timer = {
 	sounds: SOUND,
 };
 
-// TODO: remake localStorage workflow
-export const $minTime = createStore<number>(Number(localStorage.getItem(PREVIOUS_MIN_VALUE_KEY) ?? '') || 0)
+export const $minTime = createStore<number>(LocalStorage.getItem(PREVIOUS_MIN_VALUE_KEY, isNumber, 0))
 	.on(changeMinTime, (_, time) => {
-		localStorage.setItem(PREVIOUS_MIN_VALUE_KEY, String(time));
+		LocalStorage.setItem(PREVIOUS_MIN_VALUE_KEY, time);
 
 		return time;
 	});
 
 // TODO: remake localStorage workflow
-export const $maxTime = createStore<number>(Number(localStorage.getItem(PREVIOUS_MAX_VALUE_KEY) ?? '') || 0)
+export const $maxTime = createStore<number>(LocalStorage.getItem(PREVIOUS_MAX_VALUE_KEY, isNumber, 0))
 	.on(changeMaxTime, (_, time) => {
-		localStorage.setItem(PREVIOUS_MAX_VALUE_KEY, String(time));
+		LocalStorage.setItem(PREVIOUS_MAX_VALUE_KEY, time);
 
 		return time;
 	});
 
 export const $chosenSounds = createStore<Array<Sound>>(
-	localStorage.getItem(CHOSEN_SOUNDS)
-		// @ts-expect-error WHY: too lazy
-		? JSON.parse(localStorage.getItem(CHOSEN_SOUNDS))
-		: [SOUND.BELL],
+	LocalStorage.getItem(
+		CHOSEN_SOUNDS,
+		(chosenSounds): chosenSounds is Array<string> => {
+			return Array.isArray(chosenSounds) && chosenSounds.every(isString);
+		},
+		[SOUND.BELL],
+	),
 ).on(changeChosenSounds, (_, newChosenSounds) => {
-	localStorage.setItem(CHOSEN_SOUNDS, JSON.stringify(newChosenSounds));
+	LocalStorage.setItem(CHOSEN_SOUNDS, newChosenSounds);
 
 	return newChosenSounds;
 });
@@ -140,25 +143,13 @@ export const $isInDangerZone = combine($intervalValue, $minTime, (intervalValue,
 });
 
 // TODO: optimize read from localStorage
-export const $signalHistory = createStore<Array<string>>((() => {
-	const stringifiedHistory = localStorage.getItem('ALCO_TIMER/PREVIOUS_SIGNAL');
-
-	let storedSignals: Array<string> = [];
-
-	try {
-		const parsedHistory = stringifiedHistory && JSON.parse(stringifiedHistory);
-
-		if (Array.isArray(parsedHistory) && parsedHistory.every(isString)) {
-			storedSignals = parsedHistory;
-		} else {
-			storedSignals = [];
-		}
-	} catch (_) {
-		storedSignals = [];
-	}
-
-	return storedSignals;
-})())
+export const $signalHistory = createStore<Array<string>>(
+	LocalStorage.getItem(
+		PREVIOUS_SIGNALS_KEY, (history): history is Array<string> => {
+			return Array.isArray(history) && history.every(isString);
+		}, [],
+	),
+)
 	.on(requestSignal, (history, signalInSeconds = 0) => {
 		const signal = (signalInSeconds ?? 0) * 1000;
 
@@ -169,12 +160,12 @@ export const $signalHistory = createStore<Array<string>>((() => {
 
 		const updatedHistory = history.concat(timeRecord);
 
-		localStorage.setItem('ALCO_TIMER/PREVIOUS_SIGNAL', JSON.stringify(updatedHistory));
+		LocalStorage.setItem(PREVIOUS_SIGNALS_KEY, updatedHistory);
 
 		return updatedHistory;
 	})
 	.on(clearSignalsHistory, () => {
-		localStorage.removeItem('ALCO_TIMER/PREVIOUS_SIGNAL');
+		LocalStorage.removeItem(PREVIOUS_SIGNALS_KEY);
 
 		return [];
 	});

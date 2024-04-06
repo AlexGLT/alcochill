@@ -1,4 +1,5 @@
-export const chooseRandomSecondFromInterval = (min: number, max: number): number => (
-	// eslint-disable-next-line no-mixed-operators, @typescript-eslint/no-magic-numbers
-	Math.round((Math.random() * (max - min) + min) * 60)
-);
+const SECONDS_IN_MINUTE = 60;
+
+export const chooseRandomSecondFromInterval = (min: number, max: number): number => {
+	return Math.round((Math.random() * (max - min) + min) * SECONDS_IN_MINUTE);
+};

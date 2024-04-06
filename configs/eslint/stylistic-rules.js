@@ -319,9 +319,7 @@ export const stylisticRules = {
 		'stylistic/no-floating-decimal': SEVERITY.ERROR,
 
 		// https://eslint.style/rules/default/no-mixed-operators
-		'stylistic/no-mixed-operators': [SEVERITY.ERROR, {
-			allowSamePrecedence: true,
-		}],
+		'stylistic/no-mixed-operators': SEVERITY.OFF,
 
 		// https://eslint.style/rules/default/no-mixed-spaces-and-tabs
 		'stylistic/no-mixed-spaces-and-tabs': SEVERITY.ERROR,
