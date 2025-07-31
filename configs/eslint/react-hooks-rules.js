@@ -1,14 +1,9 @@
-import reactHooksPlugin from 'eslint-plugin-react-hooks';
+import {SEVERITY} from './constants.js';
 
 
-// config for eslint-plugin-react-hooks 4.6.0
-/** @type {import('eslint').Linter.FlatConfig} */
+// config for eslint-plugin-react-hooks 5.2.0
+/** @type {import('eslint').Linter.Config.rules} */
 export const reactHooksRules = {
-	files: ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx'],
-	plugins: {
-		'react-hooks': reactHooksPlugin,
-	},
-	rules: {
-
-	},
+	'react-hooks/rules-of-hooks': SEVERITY.ERROR,
+	'react-hooks/exhaustive-deps': SEVERITY.ERROR,
 };

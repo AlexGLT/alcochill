@@ -1,5 +1,5 @@
 export const SEVERITY = {
-	OFF: 'off',
-	WARN: 'warn',
-	ERROR: 'error',
+	OFF: 0,
+	WARN: 1,
+	ERROR: 2,
 };

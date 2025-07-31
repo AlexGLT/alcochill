@@ -5,5 +5,5 @@ export {importRules} from './import-rules.js';
 export {reactRules} from './react-rules.js';
 export {reactHooksRules} from './react-hooks-rules.js';
 export {reactRefreshRules} from './react-refresh-rules.js';
-export {accesibilityRules} from './jsx-a11y-rules.js';
-export {jestRules} from './jest-rules.js';
+
+export {SEVERITY} from './constants.js';
