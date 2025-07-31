@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import homePage from '@pages/home';
 import gamesPage from '@pages/games';
 import eliteMemesPage from '@pages/elite-memes';
+import eliteVideosPage from '@pages/elite-videos';
 
 import styles from './header.module.scss';
 
@@ -16,7 +17,7 @@ type Props = {
 };
 
 export const Header: FC<Props> = ({}) => {
-	const getNavLinkStyles = ({isActive}: {isActive: boolean}) => (
+	const getNavLinkStyles = ({isActive}: {isActive: boolean}): string => (
 		clsx(styles.headerLink, {
 			[styles.headerLinkActive]: isActive,
 		})
@@ -39,6 +40,15 @@ export const Header: FC<Props> = ({}) => {
 					className={getNavLinkStyles}
 				>
 					{gamesPage.name}
+				</NavLink>
+			</nav>
+
+			<nav>
+				<NavLink
+					to={eliteVideosPage.path}
+					className={getNavLinkStyles}
+				>
+					{eliteVideosPage.name}
 				</NavLink>
 			</nav>
 

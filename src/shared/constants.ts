@@ -50,7 +50,7 @@ export const SOUND = {
 	TOYOTA: '/audio/toyota.mp3',
 	VICTORY: '/audio/victory.mp3',
 	YAMETE_KUDASAI: '/audio/yamete-kudasai.mp3',
-};
+} as const;
 
 export type Sound = Values<typeof SOUND>;
 

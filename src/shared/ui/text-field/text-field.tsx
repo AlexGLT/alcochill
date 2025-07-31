@@ -1,6 +1,5 @@
+import {useId, useLayoutEffect, useState} from 'react';
 import clsx from 'clsx';
-
-import {useLayoutEffect, useState} from 'react';
 
 import {TYPE} from './constants';
 import styles from './text-field.module.scss';
@@ -32,6 +31,8 @@ const TextField: FC<Props> = ({
 	onChange,
 	...restProps
 }) => {
+	const inputId = useId();
+
 	const [value, setValue] = useState(initialValue);
 
 	useLayoutEffect(() => {
@@ -57,22 +58,27 @@ const TextField: FC<Props> = ({
 	return (
 		<div className={styles.textField}>
 			{label && (
-				<label className={styles.textFieldLabel}>{label}</label>
+				<label htmlFor={inputId} className={styles.textFieldLabel}>
+					{label}
+				</label>
 			)}
 
 			<div className={fieldContainerClassNames}>
 				<input
 					{...restProps}
+					className={styles.textFieldInput}
+					id={inputId}
 					value={value}
 					type={type}
 					placeholder={placeholder}
 					onChange={handleChange}
-					className={styles.textFieldInput}
 				/>
 			</div>
 
 			{isInvalid && (
-				<small className={messageClassNames}>{invalidMessage}</small>
+				<small className={messageClassNames}>
+					{invalidMessage}
+				</small>
 			)}
 		</div>
 

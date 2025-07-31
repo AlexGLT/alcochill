@@ -3,6 +3,7 @@ import {createBrowserRouter} from 'react-router-dom';
 import homePage from '@pages/home';
 import gamesPage from '@pages/games';
 import eliteMemesPage from '@pages/elite-memes';
+import eliteVideosPage from '@pages/elite-videos';
 
 import {PageLayout} from './page-layout';
 
@@ -44,6 +45,19 @@ export const router = createBrowserRouter([
 				}}
 			>
 				{eliteMemesPage.element}
+			</PageLayout>
+		),
+	},
+	{
+		path: eliteVideosPage.path,
+		element: (
+			<PageLayout
+				{...{
+					...eliteVideosPage.params,
+					currentPath: eliteVideosPage.path,
+				}}
+			>
+				{eliteVideosPage.element}
 			</PageLayout>
 		),
 	},

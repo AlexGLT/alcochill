@@ -1,0 +1,130 @@
+.main {
+	width: 100%;
+	height: 100%;
+	padding: 1em;
+	overflow: hidden;
+}
+
+.elite-videos {
+	position: relative;
+
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+
+	overflow: hidden;
+}
+
+.video-block {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+
+	transform: translateY(0);
+
+	transition: 0.5s;
+
+	&_previous {
+		transform: translateY(-100%);
+	}
+
+	&_current {
+		transform: translateY(0);
+	}
+
+	&_next {
+		transform: translateY(100%);
+	}
+}
+
+.index-control-container {
+	position: fixed;
+	right: 1.5em;
+	top: 50%;
+
+	transform: translateY(-50%);
+
+	display: flex;
+	flex-direction: column;
+
+	gap: 1em;
+}
+
+.index-control-button {
+	width: 56px;
+	height: 56px;
+
+	padding: 12px;
+
+	border: 1px solid #f1f1f1;
+	border-radius: 50%;
+	outline: none;
+
+	transition: 0.2s;
+
+	background-color: #373737;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	cursor: pointer;
+
+	&:hover {
+		background-color: #535353;
+	}
+
+	&:active {
+		background-color: #656565;
+	}
+
+	&:disabled {
+		cursor: not-allowed;
+
+		background-color: #232323;
+
+		svg {
+			fill: #f1f1f1;
+
+			cursor: not-allowed;
+		}
+	}
+
+	svg {
+		fill: #f1f1f1;
+		pointer-events: none;
+		cursor: pointer;
+	}
+}
+
+.video-author {
+	position: absolute;
+
+	top: 0;
+	left: 0;
+}
+
+.sender {
+	position: absolute;
+	z-index: 5;
+
+	font-size: 1.5rem;
+
+	background-color: #373737;
+	border-radius: 8px;
+
+	padding: 12px;
+}
+
+.timestamp {
+	position: absolute;
+	right: 0;
+	z-index: 5;
+
+	font-size: 1.5rem;
+
+	background-color: #373737;
+	border-radius: 8px;
+
+	padding: 12px;
+}
