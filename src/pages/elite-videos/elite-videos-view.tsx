@@ -89,6 +89,14 @@ export const EliteVideosView: FC = () => {
 		fetchNewVideo();
 	}, []);
 
+	useEffect(() => {
+		fetch('https://840ca558-80be-454c-8a82-9170ec14b807.pub.instances.scw.cloud:8000/api/v1/videos?dateStart=2024-08-01&dateEnd=2025-08-02', {
+	headers: {
+		['X-API-KEY']: localStorage.API_KEY as string,
+	},
+})
+	}, []);
+
 	useLayoutEffect(() => {
 		if (currentIndex + OFFSET >= videos.length) {
 			fetchNewVideo();
