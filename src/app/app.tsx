@@ -1,8 +1,11 @@
 import {RouterProvider} from 'react-router-dom';
+import {QueryClientProvider} from '@tanstack/react-query';
 import {ChakraProvider, defaultSystem} from '@chakra-ui/react';
 import Snowfall from 'react-snowfall';
 import {ThemeProvider} from 'next-themes';
 import {useLayoutEffect, useState} from 'react';
+
+import {queryClient} from '@shared/core/react-query';
 
 import {router} from './router';
 
@@ -20,12 +23,14 @@ export const App: FC = () => {
 	}, []);
 
 	return (
-		<ChakraProvider value={defaultSystem}>
-			<ThemeProvider attribute="class" disableTransitionOnChange={true} forcedTheme="dark">
-				<RouterProvider router={router}/>
+		<QueryClientProvider client={queryClient}>
+			<ChakraProvider value={defaultSystem}>
+				<ThemeProvider attribute="class" disableTransitionOnChange={true} forcedTheme="dark">
+					<RouterProvider router={router}/>
 
-				{showSnow ? <Snowfall/> : null}
-			</ThemeProvider>
-		</ChakraProvider>
+					{showSnow ? <Snowfall/> : null}
+				</ThemeProvider>
+			</ChakraProvider>
+		</QueryClientProvider>
 	);
 };

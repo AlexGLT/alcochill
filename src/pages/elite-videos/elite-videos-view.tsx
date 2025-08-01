@@ -1,42 +1,44 @@
 import {
 	useCallback,
-	useEffect, useLayoutEffect, useRef, useState,
+	useLayoutEffect,
+	useRef,
+	useState,
 } from 'react';
+
+import {FaChevronUp, FaChevronDown} from 'react-icons/fa6';
+import {useQuery} from '@tanstack/react-query';
 import clsx from 'clsx';
-import {nanoid} from 'nanoid';
+import {shuffle} from 'es-toolkit';
 
-import {isNumber, useStableCallback} from '@shared/libs';
-
-import {getRandomVideo} from './api';
-import ArrowUp from './arrow-up.svg?react';
-import ArrowDown from './arrow-down.svg?react';
+import {useStableCallback} from '@shared/libs';
+import {getVideosListByRange, getRandomVideoUrl} from '@shared/api/random-videos';
 
 import styles from './elite-videos.module.scss';
 
 import type {FC} from 'react';
+import type {VideoList} from '@shared/api/random-videos';
 
 
-const OFFSET = 3;
+type DIRECTION = 'DOWN' | 'UP';
 
-const DOWN = 'DOWN';
-const UP = 'UP';
-
-type VideoParams = {
-	id: string,
-	src?: string,
-	senderName?: string | null,
-	timestamp?: string | null,
-	// isLoading: boolean,
-};
+const EMPTY_LIST: VideoList = [];
 
 export const EliteVideosView: FC = () => {
-	const [videos, setVideos] = useState<Array<VideoParams>>([]);
+	const {data = EMPTY_LIST} = useQuery({
+		queryKey: ['videos'],
+		queryFn: () => getVideosListByRange(),
+	});
 
 	const [currentIndex, setCurrentIndex] = useState(0);
+	const [videos, setVideos] = useState(EMPTY_LIST);
 
-	const previousVideo = isNumber(currentIndex - 1) && currentIndex - 1 >= 0 ? videos.at(currentIndex - 1) : undefined;
-	const currentVideo = isNumber(currentIndex) ? videos.at(currentIndex) : undefined;
-	const nextVideo = isNumber(currentIndex + 1) ? videos.at(currentIndex + 1) : undefined;
+	useLayoutEffect(() => {
+		setVideos(shuffle(data));
+	}, [data]);
+
+	const previousVideo = currentIndex - 1 >= 0 ? videos.at(currentIndex - 1) : undefined;
+	const currentVideo = currentIndex || currentIndex === 0 ? videos.at(currentIndex) : undefined;
+	const nextVideo = currentIndex + 1 ? videos.at(currentIndex + 1) : undefined;
 
 	const isAnimationPlays = useRef(false);
 
@@ -52,73 +54,13 @@ export const EliteVideosView: FC = () => {
 		currentVideoContainerRef.current?.play();
 	}, []);
 
-	const fetchRandomVideo = useStableCallback((): Promise<{
-		blob: Blob,
-		senderName: string | null,
-		timestamp: string | null,
-	}> => {
-		return getRandomVideo().then(async (response) => {
-			const blobbedVideo = await response.blob();
-
-			return {
-				blob: blobbedVideo,
-				senderName: response.headers.get('X-From'),
-				timestamp: response.headers.get('X-Timestamp'),
-			};
+	const handleVideoError = useStableCallback((fileId: string): void => {
+		setVideos((previousVideos) => {
+			return previousVideos.filter((video, index) => video.fileId !== fileId);
 		});
 	});
 
-	const fetchNewVideo = useStableCallback((id: string): void => {
-		fetchRandomVideo().then(({blob, senderName, timestamp}) => {
-			const src = URL.createObjectURL(blob);
-
-			setVideos((previousVideos) => {
-				return previousVideos.concat({
-					id: nanoid(),
-					src,
-					senderName,
-					timestamp,
-				});
-			});
-		});
-	});
-
-	useEffect(() => {
-		fetchNewVideo();
-		fetchNewVideo();
-		fetchNewVideo();
-	}, []);
-
-	useEffect(() => {
-		fetch('https://840ca558-80be-454c-8a82-9170ec14b807.pub.instances.scw.cloud:8000/api/v1/videos?dateStart=2024-08-01&dateEnd=2025-08-02', {
-	headers: {
-		['X-API-KEY']: localStorage.API_KEY as string,
-	},
-})
-	}, []);
-
-	useLayoutEffect(() => {
-		if (currentIndex + OFFSET >= videos.length) {
-			fetchNewVideo();
-		}
-	}, [currentIndex]);
-
-	const handleVideoError = useStableCallback((errorIndex: number): void => {
-		fetchRandomVideo().then(({blob, senderName, timestamp}) => {
-			const src = URL.createObjectURL(blob);
-
-			setVideos((previousVideos) => {
-				return previousVideos.with(errorIndex, {
-					id: nanoid(),
-					src,
-					senderName,
-					timestamp,
-				});
-			});
-		});
-	});
-
-	const changeIndex = useStableCallback((direction: typeof DOWN | typeof UP): void => {
+	const changeIndex = useStableCallback((direction: DIRECTION): void => {
 		if (!isAnimationPlays.current) {
 			if (previousVideoContainerRef.current) {
 				previousVideoContainerRef.current.pause();
@@ -195,34 +137,34 @@ export const EliteVideosView: FC = () => {
 				ref={playerContainerRef}
 				className={styles.eliteVideos}
 			>
-				{currentVideo?.senderName && (
+				{currentVideo?.from ? (
 					<div className={styles.sender}>
-						{currentVideo.senderName}
+						{currentVideo.from}
 					</div>
-				)}
+				) : null}
 
-				{currentVideo?.timestamp && (
+				{currentVideo?.timestamp ? (
 					<div className={styles.timestamp}>
 						{new Date(currentVideo.timestamp).toLocaleString()}
 					</div>
-				)}
+				) : null}
 
-				{previousVideo && (
+				{previousVideo ? (
 					<video
 						ref={previousVideoContainerRef}
-						key={previousVideo.src}
-						src={previousVideo.src}
+						key={previousVideo.fileId}
+						src={getRandomVideoUrl(previousVideo.fileId)}
 						controls={true}
 						className={clsx(styles.videoBlock, styles.videoBlockPrevious)}
 						onTransitionEndCapture={onAnimationEnd}
 					/>
-				)}
+				) : null}
 
-				{currentVideo && (
+				{currentVideo ? (
 					<video
 						ref={currentVideoContainerRef}
-						key={currentVideo.src}
-						src={currentVideo.src}
+						key={currentVideo.fileId}
+						src={getRandomVideoUrl(currentVideo.fileId)}
 						autoPlay={true}
 						loop={true}
 						controls={true}
@@ -233,36 +175,39 @@ export const EliteVideosView: FC = () => {
 						onClick={togglePlay}
 						onTransitionEndCapture={onAnimationEnd}
 						onError={() => {
-							handleVideoError(currentIndex);
+							handleVideoError(currentVideo.fileId);
 						}}
 					/>
-				)}
+				) : null}
 
-				{nextVideo && (
+				{nextVideo ? (
 					<video
 						ref={previousVideoContainerRef}
-						key={nextVideo.src}
-						src={nextVideo.src}
+						key={nextVideo.fileId}
+						src={getRandomVideoUrl(nextVideo.fileId)}
 						controls={true}
 						className={clsx(styles.videoBlock, styles.videoBlockNext)}
 						onTransitionEndCapture={onAnimationEnd}
 					/>
-				)}
+				) : null}
 
 				<div className={styles.indexControlContainer}>
 					<button
+						type="button"
 						className={styles.indexControlButton}
 						disabled={currentIndex < 1}
-						onClick={openPreviousVideo}>
-						<ArrowUp />
+						onClick={openPreviousVideo}
+					>
+						<FaChevronUp/>
 					</button>
 
 					<button
+						type="button"
 						className={styles.indexControlButton}
 						disabled={currentIndex >= videos.length - 1}
 						onClick={openNextVideo}
 					>
-						<ArrowDown />
+						<FaChevronDown/>
 					</button>
 				</div>
 			</div>

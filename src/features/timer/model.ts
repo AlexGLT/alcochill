@@ -65,11 +65,12 @@ export const $maxTime = createStore<number>(LocalStorage.getItem(PREVIOUS_MAX_VA
 export const $chosenSounds = createStore<Array<Sound>>(
 	LocalStorage.getItem(
 		CHOSEN_SOUNDS,
-		(chosenSounds): chosenSounds is Array<string> => {
+		(chosenSounds): chosenSounds is Array<Sound> => {
 			return Array.isArray(chosenSounds) && chosenSounds.every(isString);
 		},
 		[SOUND.BELL],
 	),
+// @ts-expect-error WHY: temp
 ).on(changeChosenSounds, (_, newChosenSounds) => {
 	LocalStorage.setItem(CHOSEN_SOUNDS, newChosenSounds);
 
