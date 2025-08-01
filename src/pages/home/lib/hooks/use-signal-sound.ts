@@ -18,7 +18,6 @@ import {SOUND} from '@shared/constants';
 import {takeRandomArrayElement} from '@features/timer/lib/utils';
 
 import type {ChangeEvent} from 'react';
-
 import type {Sound} from '@shared/constants';
 
 
@@ -32,9 +31,12 @@ type ReturnParams = {
 	stopSound: () => void,
 	testVolume: () => void,
 	checkChosenSound: (sound: Sound, value: boolean) => void,
-	selectAll: any,
-	// apply: () => void,
-	// cancel: () => void,
+	updateChosenSounds: (sounds: Array<string>) => void,
+	selectAll: unknown,
+	/*
+	 * apply: () => void,
+	 * cancel: () => void,
+	 */
 };
 
 export const useSoundSignal = (): ReturnParams => {
@@ -65,6 +67,10 @@ export const useSoundSignal = (): ReturnParams => {
 		}
 
 		changeChosenSounds(Array.from(newChosenSounds.values()));
+	});
+
+	const updateChosenSounds = useStableCallback((sounds: Array<string>): void => {
+		changeChosenSounds(Array.from(sounds));
 	});
 
 	const playSound = useCallback((sound: Sound): void => {
@@ -104,13 +110,17 @@ export const useSoundSignal = (): ReturnParams => {
 		}
 	});
 
-	// const apply = useStableCallback(() => {
-	// 	changeChosenSounds(Array.from(chosenSounds.values()));
-	// });
+	/*
+	 * const apply = useStableCallback(() => {
+	 * 	changeChosenSounds(Array.from(chosenSounds.values()));
+	 * });
+	 */
 
-	// const cancel = useStableCallback(() => {
-	// 	setChosenSounds(new Set(storedChosenSounds));
-	// });
+	/*
+	 * const cancel = useStableCallback(() => {
+	 * 	setChosenSounds(new Set(storedChosenSounds));
+	 * });
+	 */
 
 	return {
 		nowPlaying,
@@ -121,7 +131,10 @@ export const useSoundSignal = (): ReturnParams => {
 		testVolume,
 		checkChosenSound,
 		selectAll,
-		// apply,
-		// cancel,
+		updateChosenSounds,
+		/*
+		 * apply,
+		 * cancel,
+		 */
 	};
 };

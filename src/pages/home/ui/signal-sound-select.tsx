@@ -1,163 +1,125 @@
-import DropdownMenu, {DropdownItem, DropdownItemGroup} from '@atlaskit/dropdown-menu';
-import {Checkbox} from '@atlaskit/checkbox';
-import {Box, Flex} from '@atlaskit/primitives';
-import PlayIcon from '@atlaskit/icon/glyph/vid-play';
-import PauseIcon from '@atlaskit/icon/glyph/vid-pause';
-import Spinner from '@atlaskit/spinner';
+import {useMemo} from 'react';
 
-import {useState} from 'react';
+import {
+	createListCollection,
+	Portal,
+	Select,
+	Text,
+	Flex,
+	Box,
+} from '@chakra-ui/react';
 
-import Button, {Accent} from '@shared/ui/button';
+import {FaPause, FaPlay} from 'react-icons/fa6';
+
+import Button from '@shared/ui/button';
 import {SOUND, SOUND_LABEL} from '@shared/constants';
 
 import {useSoundSignal} from '../lib/hooks';
 
-import styles from '../home.module.scss';
-
-import type {FC, ChangeEvent} from 'react';
-import './temp.scss';
+import type {FC, MouseEvent} from 'react';
 
 
-const ALL_SOUNDS = Object.values(SOUND);
+const ALL_SOUNDS = createListCollection({
+	items: Object.values(SOUND).map((sound) => {
+		return {
+			value: sound,
+			label: SOUND_LABEL[sound],
+		};
+	}),
+});
 
 export const SignalSoundSelect: FC = () => {
 	const {
-		isStarted,
 		nowPlaying,
 		chosenSounds,
 		playSound,
 		stopSound,
 		testVolume,
-		checkChosenSound,
-		selectAll,
-		// apply,
-		// cancel,
+		updateChosenSounds,
+		/*
+		 * apply,
+		 * cancel,
+		 */
 	} = useSoundSignal();
 
-	const [isOpen, setIsOpen] = useState(false);
-
-	const onOpenChange = (args: {isOpen: boolean}): void => {
-		if (!args.isOpen) {
-			// cancel();
-		}
-
-		setIsOpen(args.isOpen);
-	};
-
-	// const onApplyClick = (): void => {
-	// 	apply();
-
-	// 	setIsOpen(false);
-	// };
-
-	// const onCancelClick = (): void => {
-	// 	cancel();
-
-	// 	setIsOpen(false);
-	// };
-
-	// const onSelectAllClick = ({target: {checked}}: ChangeEvent<HTMLInputElement>): void => {
-	// 	ALL_SOUNDS.forEach((sound) => {
-	// 		checkChosenSound(sound, checked);
-	// 	});
-	// };
-
-	const onCheckboxChange = ({target: {name, checked}}: ChangeEvent<HTMLInputElement>): void => {
-		checkChosenSound(name, checked);
-	};
+	const selectedSounds = useMemo(() => {
+		return Array.from(chosenSounds);
+	}, [chosenSounds]);
 
 	return (
 		<Flex
 			direction="column"
 			justifyContent="space-evenly"
 			alignItems="center"
-			gap="space.200">
+			gap="4"
+		>
 			<Button onClick={testVolume}>
 				Test volume
 			</Button>
 
-			<DropdownMenu trigger="Sounds" isOpen={isOpen} onOpenChange={onOpenChange}>
-				<div style={{maxHeight: 250, fontSize: '0.65em', lineHeight: 'normal'}}>
-					<DropdownItemGroup>
-						<DropdownItem
-							component={({children}) => (
-								<div
-									style={{
-										display: 'flex',
-										padding: 8,
-										paddingRight: 10,
-									}}>
-									{children}
-								</div>
-							)}>
-							<Flex justifyContent="space-between">
-								<Checkbox
-									name="selectAll"
-									isChecked={chosenSounds.size === ALL_SOUNDS.length}
-									label="Select All"
-									size="large"
-									onChange={selectAll}
-								/>
-							</Flex>
-						</DropdownItem>
+			<Select.Root
+				multiple={true}
+				collection={ALL_SOUNDS}
+				variant="subtle"
+				colorPalette="yellow"
+				size="md"
+				width="240px"
+				value={Array.from(selectedSounds)}
+				onValueChange={(event) => updateChosenSounds(event.value)}
+			>
+				<Select.HiddenSelect/>
 
-						{ALL_SOUNDS.map((sound) => (
-							<DropdownItem
-								key={sound}
-								component={({children}) => (
-									<div
-										style={{
-											display: 'flex',
-											padding: 8,
-											paddingRight: 10,
-										}}>
-										{children}
-									</div>
-								)}>
-								<Flex justifyContent="space-between" alignItems="center" gap="space.050">
-									<Checkbox
-										name={sound}
-										isChecked={chosenSounds.has(sound)}
-										label={SOUND_LABEL[sound]}
-										size="large"
-										onChange={onCheckboxChange}
-									/>
+				<Select.Control>
+					<Select.Trigger>
+						<Text>Select sounds</Text>
+					</Select.Trigger>
 
-									{nowPlaying === sound ? (
-										<div onClick={stopSound}>
-											<PauseIcon label="" size="medium" />
-										</div>
-									) : (
-										<div onClick={() => playSound(sound)}>
-											<PlayIcon label="" size="medium" />
-										</div>
-									)}
+					<Select.IndicatorGroup>
+						<Select.Indicator/>
+					</Select.IndicatorGroup>
+				</Select.Control>
 
-								</Flex>
-							</DropdownItem>
-						))}
+				<Portal>
+					<Select.Positioner>
+						<Select.Content>
+							{ALL_SOUNDS.items.map((sound) => {
+								const handleClick = (event: MouseEvent<SVGElement>): void => {
+									event.stopPropagation();
 
-						{/* <div style={{fontSize: '1em'}}>
-							<Flex justifyContent="space-evenly">
-								<Button
-									accent={Accent.SUCCESS}
-									isDisabled={!chosenSounds.size || isStarted}
-									onClick={onApplyClick}
-								>
-									Apply
-								</Button>
+									if (nowPlaying === sound.value) {
+										stopSound();
+									} else {
+										playSound(sound.value);
+									}
+								};
 
-								<Button
-									accent={Accent.DEFAULT}
-									onClick={onCancelClick}
-								>
-									Cancel
-								</Button>
-							</Flex>
-						</div> */}
-					</DropdownItemGroup>
-				</div>
-			</DropdownMenu>
+								return (
+									<Select.Item
+										key={sound.value}
+										item={sound}
+										padding="2"
+										fontSize="xs"
+									>
+										<Flex alignItems="center" justifyContent="space-between" flexBasis="100%">
+											<Flex alignItems="center" gap="2">
+												<Box fontSize="xx-small">
+													{nowPlaying === sound.value
+														? <FaPause onClick={handleClick}/>
+														: <FaPlay onClick={handleClick}/>}
+												</Box>
+
+												{sound.label}
+											</Flex>
+
+											<Select.ItemIndicator/>
+										</Flex>
+									</Select.Item>
+								);
+							})}
+						</Select.Content>
+					</Select.Positioner>
+				</Portal>
+			</Select.Root>
 		</Flex>
 	);
 };

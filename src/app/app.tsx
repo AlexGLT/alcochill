@@ -1,8 +1,7 @@
 import {RouterProvider} from 'react-router-dom';
+import {ChakraProvider, defaultSystem} from '@chakra-ui/react';
 import Snowfall from 'react-snowfall';
-
-import {setGlobalTheme} from '@atlaskit/tokens';
-
+import {ThemeProvider} from 'next-themes';
 import {useLayoutEffect, useState} from 'react';
 
 import {router} from './router';
@@ -18,17 +17,15 @@ export const App: FC = () => {
 		window.toggleSnow = () => {
 			setShowSnow((snow) => !snow);
 		};
-
-		void setGlobalTheme({
-			colorMode: 'dark',
-		});
 	}, []);
 
 	return (
-		<>
-			<RouterProvider router={router} />
+		<ChakraProvider value={defaultSystem}>
+			<ThemeProvider attribute="class" disableTransitionOnChange={true} forcedTheme="dark">
+				<RouterProvider router={router}/>
 
-			{showSnow && <Snowfall />}
-		</>
+				{showSnow ? <Snowfall/> : null}
+			</ThemeProvider>
+		</ChakraProvider>
 	);
 };
