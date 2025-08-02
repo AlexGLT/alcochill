@@ -155,6 +155,7 @@ export const EliteVideosView: FC = () => {
 						key={previousVideo.fileId}
 						src={getRandomVideoUrl(previousVideo.fileId)}
 						controls={true}
+						preload="auto"
 						className={clsx(styles.videoBlock, styles.videoBlockPrevious)}
 						onTransitionEndCapture={onAnimationEnd}
 					/>
@@ -168,6 +169,7 @@ export const EliteVideosView: FC = () => {
 						autoPlay={true}
 						loop={true}
 						controls={true}
+						preload="auto"
 						disablePictureInPicture={true}
 						disableRemotePlayback={true}
 						controlsList="nofullscreen noremoteplayback noplaybackrate"
@@ -186,6 +188,7 @@ export const EliteVideosView: FC = () => {
 						key={nextVideo.fileId}
 						src={getRandomVideoUrl(nextVideo.fileId)}
 						controls={true}
+						preload="auto"
 						className={clsx(styles.videoBlock, styles.videoBlockNext)}
 						onTransitionEndCapture={onAnimationEnd}
 					/>

@@ -1,5 +1,3 @@
-import typescriptPlugin from '@typescript-eslint/eslint-plugin';
-
 import {SEVERITY} from './constants.js';
 
 
