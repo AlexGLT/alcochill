@@ -6,7 +6,7 @@ import {
 	isValid,
 } from 'date-fns';
 
-import fetch from '@shared/core/fetch';
+import api, {BASE_URL} from '@shared/core/ky';
 
 
 const VideoSchema = z.object({
@@ -38,12 +38,12 @@ export const getVideosListByRange = (to: string | number = TODAY, from?: string 
 	searchParams.set('dateStart', dateStart.toISOString());
 	searchParams.set('dateEnd', dateEnd.toISOString());
 
-	return fetch(`api/v1/videos?${searchParams}`)
+	return api(`v1/videos?${searchParams}`)
 		.then((res) => res.json())
 		.then((res) => VideoListSchema.parse(res))
 		.catch(() => EMPTY_LIST);
 };
 
 export const getRandomVideoUrl = (fileId: string): string => {
-	return `https://840ca558-80be-454c-8a82-9170ec14b807.pub.instances.scw.cloud:8000/api/v1/videos/${fileId}`;
+	return `${BASE_URL}v1/videos/${fileId}`;
 };
