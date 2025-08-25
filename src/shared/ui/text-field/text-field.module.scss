@@ -1,4 +1,4 @@
-@import '../global-styles.module.scss';
+@use '../global-styles.module.scss' as common;
 
 $placeholder-text-color: #8C9BAB;
 $text-color: #B6C2CF;
@@ -19,12 +19,12 @@ $text-color: #B6C2CF;
 	}
 
 	&__input-container {
-		border: $border-width solid var(--border-color);
-		border-radius: $border-radius;
+		border: common.$border-width solid var(--border-color);
+		border-radius: common.$border-radius;
 		outline: none;
 		overflow: hidden;
 
-		transition-duration: $transition-time;
+		transition-duration: common.$transition-time;
 		transition-property: background-color, border-color, filter;
 
 		width: 10em;

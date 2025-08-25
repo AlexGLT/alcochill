@@ -1,6 +1,6 @@
-@import '../global-styles.module.scss';
+@use '../global-styles.module.scss' as common;
 
 .card {
-	border: $border-width solid #3a3a3a;
-	border-radius: $border-radius;
+	border: common.$border-width solid #3a3a3a;
+	border-radius: common.$border-radius;
 }

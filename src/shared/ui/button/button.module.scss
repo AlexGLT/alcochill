@@ -1,4 +1,4 @@
-@import '../global-styles.module.scss';
+@use '../global-styles.module.scss' as common;
 
 $accent-selected: #092957;
 $interactive-filter: 0.4;
@@ -21,7 +21,7 @@ $interactive-filter: 0.4;
 	padding: 0.625em;
 
 	border: 0;
-	border-radius: $border-radius;
+	border-radius: common.$border-radius;
 
 	background-color: var(--background-color);
 
@@ -34,27 +34,27 @@ $interactive-filter: 0.4;
 	cursor: pointer;
 
 	&_default {
-		--background-color: #{$accent-color-default};
-		--text-color: #{$text-color-dark};
+		--background-color: #{common.$accent-color-default};
+		--text-color: #{common.$text-color-dark};
 	}
-	
+
 	&_primary {
-		--background-color: #{$accent-color-primary};
+		--background-color: #{common.$accent-color-primary};
 	}
 
 	&_success {
-		--background-color: #{$accent-color-success};
-		--text-color: #{$text-color-dark};
+		--background-color: #{common.$accent-color-success};
+		--text-color: #{common.$text-color-dark};
 	}
 
 	&_danger {
-		--background-color: #{$accent-color-danger};
-		--text-color: #{$text-color-dark};
+		--background-color: #{common.$accent-color-danger};
+		--text-color: #{common.$text-color-dark};
 	}
 
 	&_warning {
-		--background-color: #{$accent-color-warning};
-		--text-color: #{$text-color-dark};
+		--background-color: #{common.$accent-color-warning};
+		--text-color: #{common.$text-color-dark};
 	}
 
 	&:hover {
@@ -70,14 +70,15 @@ $interactive-filter: 0.4;
 	}
 
 	&:focus-visible {
-		outline: $border-width solid white;
+		outline: common.$border-width solid white;
 	}
 
 	&:disabled {
 		cursor: not-allowed;
 		filter: brightness(0.35);
 
-		&:hover, &:active {
+		&:hover,
+		&:active {
 			filter: brightness(0.35);
 		}
 	}
@@ -86,7 +87,8 @@ $interactive-filter: 0.4;
 		--background-color: #{$accent-selected};
 		--text-color: #579DFF;
 
-		&:hover, &:active {
+		&:hover,
+		&:active {
 			filter: initial;
 		}
 	}

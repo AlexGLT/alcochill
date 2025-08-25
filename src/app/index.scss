@@ -1,4 +1,5 @@
-@import './normalizr';
+@use "sass:color";
+@use './normalizr';
 
 :root {
 	font-family: sans-serif;
@@ -20,7 +21,7 @@ html {
 
 body {
 	position: relative;
-	background-color: lighten(#111111, 7%);
+	background-color: color.adjust(#111111, $lightness: 7%);
 	overflow: hidden;
 }
 
