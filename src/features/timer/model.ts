@@ -1,188 +1,196 @@
 import {
+	createEffect,
 	createEvent,
 	createStore,
-	combine,
 	sample,
 } from 'effector';
 
-import {isNumber, isString} from '@shared/libs';
-import {SOUND} from '@shared/constants';
-import {LocalStorage} from '@shared/storages';
+import {
+	delay,
+	round,
+	sample as choice,
+} from 'es-toolkit';
 
-import {chooseRandomSecondFromInterval, takeRandomArrayElement} from './lib/utils';
+import {nanoid} from 'nanoid';
+
+import {AudioController, convertMsToS} from '@shared/libs';
+
+import {chooseRandomSecondFromInterval} from './lib/utils';
+import {WorkerController} from './worker-controller';
+import {TimerState} from './types';
 
 import type {Sound} from '@shared/constants';
+import type {TimerConfig} from './types';
 
 
-export const start = createEvent();
-export const stop = createEvent();
+const audioController = new AudioController();
 
-export const tick = createEvent();
+export const timerStarted = createEvent<TimerConfig>();
+export const timerPaused = createEvent();
+export const timerResumed = createEvent();
+export const timerStopped = createEvent();
+export const timerRestarted = createEvent();
 
-export const requestSignal = createEvent<number | null | void>();
+const playSignalSoundFx = createEffect<Sound, void, void>((sound) => {
+	audioController.updateSource(sound);
 
-export const changeMinTime = createEvent<number>();
-export const changeMaxTime = createEvent<number>();
-export const changeChosenSounds = createEvent<Array<string>>();
-
-start.watch(() => {
-	requestSignal();
+	return audioController.play()
+		.catch((error) => {
+			console.error('Error has been occurred during the audio playing', error);
+		})
+		.finally(() => {
+			audioController.clear();
+		});
 });
 
-// TODO: remake into store
-const DEFAULT_TIMEOUT = 1000;
+const $timerState = createStore(TimerState.INITIAL)
+	.on(timerStarted, () => TimerState.RUNNING)
+	.on(playSignalSoundFx, () => TimerState.SIGNALIZING)
+	.on(timerPaused, () => TimerState.PAUSED)
+	.on(timerResumed, () => TimerState.RUNNING)
+	.on(timerStopped, () => TimerState.STOPPED)
+	.on(timerRestarted, () => TimerState.RUNNING);
 
-const PREVIOUS_MIN_VALUE_KEY = 'ALCO_TIMER/MIN_VALUE';
-const PREVIOUS_MAX_VALUE_KEY = 'ALCO_TIMER/MAX_VALUE';
-
-const PREVIOUS_SIGNALS_KEY = 'ALCO_TIMER/PREVIOUS_SIGNAL';
-const CHOSEN_SOUNDS = 'ALCO_TIMER/CHOSEN_SOUNDS';
-
-window.timer = {
-	changeMinTime,
-	changeMaxTime,
-	changeChosenSounds,
-	startTimer: start,
-	stopTimer: stop,
-	sounds: SOUND,
+const DEFAULT_CONFIG: TimerConfig = {
+	minTime: 0,
+	maxTime: 0,
+	timeSpeed: 0,
+	sounds: [],
 };
 
-export const $minTime = createStore<number>(LocalStorage.getItem(PREVIOUS_MIN_VALUE_KEY, isNumber, 0))
-	.on(changeMinTime, (_, time) => {
-		LocalStorage.setItem(PREVIOUS_MIN_VALUE_KEY, time);
+// TODO: throw error and stop timer if params are incorrect
+const $workingTimerParams = createStore(DEFAULT_CONFIG)
+	.on(timerStarted, (_, params) => params)
+	.reset(timerStopped);
 
-		return time;
-	});
+export const counterUpdated = createEvent<number>();
 
-// TODO: remake localStorage workflow
-export const $maxTime = createStore<number>(LocalStorage.getItem(PREVIOUS_MAX_VALUE_KEY, isNumber, 0))
-	.on(changeMaxTime, (_, time) => {
-		LocalStorage.setItem(PREVIOUS_MAX_VALUE_KEY, time);
+export const $counter = createStore(0)
+	.on(counterUpdated, (_, value) => value)
+	.reset(timerStopped);
 
-		return time;
-	});
-
-export const $chosenSounds = createStore<Array<Sound>>(
-	LocalStorage.getItem(
-		CHOSEN_SOUNDS,
-		(chosenSounds): chosenSounds is Array<Sound> => {
-			return Array.isArray(chosenSounds) && chosenSounds.every(isString);
-		},
-		[SOUND.BELL],
-	),
-// @ts-expect-error WHY: temp
-).on(changeChosenSounds, (_, newChosenSounds) => {
-	LocalStorage.setItem(CHOSEN_SOUNDS, newChosenSounds);
-
-	return newChosenSounds;
-});
-
-
-const $timerParams = combine($minTime, $maxTime, $chosenSounds, (minTime, maxTime, chosenSounds) => {
-	return {
-		minTime,
-		maxTime,
-		chosenSounds,
-	};
-});
-
-export const $canBeStarted = $timerParams.map(({minTime, maxTime, chosenSounds}) => {
-	return !!(
-		isNumber(minTime) && minTime >= 0 &&
-		isNumber(maxTime) && maxTime >= 0 &&
-		maxTime > minTime &&
-		chosenSounds.length
-	);
-});
-
-export const $signalAudio = createStore<HTMLAudioElement>(new Audio(SOUND.BELL))
-	.on(requestSignal, (audio) => {
-		audio.src = takeRandomArrayElement($chosenSounds.getState()) ?? '';
-
-		return audio;
-	});
-
-const $intervalId = createStore<number | null>(null)
-	.on(start, (intervalId) => {
-		if (isNumber(intervalId)) {
-			clearInterval(intervalId);
-		}
-
-		return setInterval(tick, DEFAULT_TIMEOUT);
+export const $limit = createStore(0)
+	.on(timerStarted, (_, {minTime, maxTime}) => {
+		return chooseRandomSecondFromInterval(minTime, maxTime);
 	})
-	.on(stop, (intervalId) => {
-		if (isNumber(intervalId)) {
-			clearInterval(intervalId);
-		}
+	.on(timerRestarted, () => {
+		const {minTime, maxTime} = $workingTimerParams.getState();
 
-		return null;
-	});
-
-export const $isStarted = $intervalId.map((intervalId) => isNumber(intervalId));
-
-export const $intervalValue = createStore<number>(0)
-	.on(tick, (intervalValue) => intervalValue + 1)
-	.on(requestSignal, () => 0)
-	.on(stop, () => 0);
-
-const $signalValue = createStore<number | null>(null)
-	.on(requestSignal, () => {
-		if ($isStarted.getState()) {
-			const {minTime, maxTime} = $timerParams.getState();
-
-			return chooseRandomSecondFromInterval(minTime, maxTime);
-		}
-
-		return null;
+		return chooseRandomSecondFromInterval(minTime, maxTime);
 	})
-	.on(stop, () => null);
-
-export const clearSignalsHistory = createEvent();
-
-export const $isInDangerZone = combine($intervalValue, $minTime, (intervalValue, minValue) => {
-	return !!(minValue && intervalValue) && intervalValue >= (minValue * 60);
-});
-
-// TODO: optimize read from localStorage
-export const $signalHistory = createStore<Array<string>>(
-	LocalStorage.getItem(
-		PREVIOUS_SIGNALS_KEY, (history): history is Array<string> => {
-			return Array.isArray(history) && history.every(isString);
-		}, [],
-	),
-)
-	.on(requestSignal, (history, signalInSeconds = 0) => {
-		const signal = (signalInSeconds ?? 0) * 1000;
-
-		const timeStamp = new Date().toLocaleTimeString();
-		const lastSignalString = new Date(signal).toLocaleTimeString('da-DK', {timeZone: 'Atlantic/Reykjavik'});
-
-		const timeRecord = `${timeStamp} - ${lastSignalString}`;
-
-		const updatedHistory = history.concat(timeRecord);
-
-		LocalStorage.setItem(PREVIOUS_SIGNALS_KEY, updatedHistory);
-
-		return updatedHistory;
-	})
-	.on(clearSignalsHistory, () => {
-		LocalStorage.removeItem(PREVIOUS_SIGNALS_KEY);
-
-		return [];
-	});
+	.reset(timerStopped);
 
 sample({
-	source: $signalValue,
-	clock: $intervalValue,
-	target: requestSignal,
-	filter: (signalValue, intervalValue) => {
-		return !!(intervalValue && signalValue && intervalValue === signalValue);
-	},
+	clock: timerStarted,
+	source: $workingTimerParams,
+	fn: ({sounds}) => choice(sounds),
+	target: playSignalSoundFx,
 });
 
-requestSignal.watch((previousSignal): void => {
-	const audio = $signalAudio.getState();
+sample({
+	clock: $counter,
+	source: {limit: $limit, config: $workingTimerParams},
+	filter: ({limit}, counter) => limit === counter,
+	fn: ({config: {sounds}}) => choice(sounds),
+	target: playSignalSoundFx,
+});
 
-	audio.load();
-	void audio.play();
+sample({
+	clock: playSignalSoundFx.finally,
+	source: $timerState,
+	filter: (state) => state === TimerState.SIGNALIZING,
+	target: timerRestarted,
+});
+
+// ============================
+// DOM EVENTS EMITTING ABOUT SIGNALIZING
+// ============================
+
+const DELAY_BEFORE_SIGNAL = 1000;
+
+const notifyBeforeSignalFx = createEffect<void, void, void>(() => {
+	window.dispatchEvent(new CustomEvent('timer:pre-signalizing'));
+});
+
+sample({
+	clock: $counter,
+	source: $limit,
+	filter: (limit, counter) => limit > 0 && limit === counter - convertMsToS(DELAY_BEFORE_SIGNAL),
+	target: notifyBeforeSignalFx,
+});
+
+const DELAY_AFTER_SIGNAL = 1000;
+
+const notifyAfterSignalFx = createEffect<void, void, void>(async () => {
+	await delay(DELAY_AFTER_SIGNAL);
+
+	window.dispatchEvent(new CustomEvent('timer:post-signalizing'));
+});
+
+sample({
+	clock: playSignalSoundFx.finally,
+	target: notifyAfterSignalFx,
+});
+
+// ============================
+// LOGS
+// ============================
+
+type TimerEvent = {
+	id: string,
+	eventName: string,
+	eventTime: Date,
+};
+
+const EMPTY_EVENTS: Array<TimerEvent> = [];
+
+const logEvent = (eventName: string): TimerEvent => {
+	return {
+		id: nanoid(),
+		eventName,
+		eventTime: new Date(),
+	};
+};
+
+export const $logs = createStore(EMPTY_EVENTS)
+	.on(timerStarted, () => EMPTY_EVENTS.concat(logEvent('start')))
+	.on(playSignalSoundFx, (state) => state.concat(logEvent('signal')))
+	.on(timerPaused, (state) => state.concat(logEvent('pause')))
+	.on(timerResumed, (state) => state.concat(logEvent('resume')))
+	.on(timerStopped, (state) => state.concat(logEvent('stop')))
+	.on(timerRestarted, (state) => state.concat(logEvent('restart')));
+
+// ============================
+// WORKER INITIALIZATION
+// ============================
+
+const workerController = new WorkerController();
+
+const DEFAULT_INTERVAL = 1000;
+
+timerStarted.watch(({timeSpeed}) => {
+	workerController.initialize({
+		interval: round(DEFAULT_INTERVAL / timeSpeed, 2),
+		onCounterUpdate: counterUpdated,
+	});
+});
+
+timerPaused.watch(() => {
+	workerController.pause();
+});
+
+playSignalSoundFx.watch(() => {
+	workerController.pause();
+});
+
+timerResumed.watch(() => {
+	workerController.resume();
+});
+
+timerRestarted.watch(() => {
+	workerController.restart();
+});
+
+timerStopped.watch(() => {
+	workerController.destroy();
 });
