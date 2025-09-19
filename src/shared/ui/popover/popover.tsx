@@ -1,5 +1,5 @@
 import {useRef} from 'react';
-import {CSSTransition, Transition} from 'react-transition-group';
+import {CSSTransition} from 'react-transition-group';
 import clsx from 'clsx';
 
 import styles from './popover.module.scss';

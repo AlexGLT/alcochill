@@ -1,4 +1,4 @@
-import {useMemo} from 'react';
+import {FaPause, FaPlay} from 'react-icons/fa6';
 
 import {
 	createListCollection,
@@ -9,10 +9,9 @@ import {
 	Box,
 } from '@chakra-ui/react';
 
-import {FaPause, FaPlay} from 'react-icons/fa6';
 
 import Button from '@shared/ui/button';
-import {SOUND, SOUND_LABEL} from '@shared/constants';
+import {SOUNDS} from '@shared/constants';
 
 import {useSoundSignal} from '../lib/hooks';
 
@@ -20,31 +19,23 @@ import type {FC, MouseEvent} from 'react';
 
 
 const ALL_SOUNDS = createListCollection({
-	items: Object.values(SOUND).map((sound) => {
+	items: SOUNDS.map(({src, label}) => {
 		return {
-			value: sound,
-			label: SOUND_LABEL[sound],
+			value: src,
+			label,
 		};
 	}),
 });
 
 export const SignalSoundSelect: FC = () => {
 	const {
-		nowPlaying,
-		chosenSounds,
+		playingNowSound,
+		selectedSounds,
 		playSound,
 		stopSound,
 		testVolume,
-		updateChosenSounds,
-		/*
-		 * apply,
-		 * cancel,
-		 */
+		updateSelectedSounds,
 	} = useSoundSignal();
-
-	const selectedSounds = useMemo(() => {
-		return Array.from(chosenSounds);
-	}, [chosenSounds]);
 
 	return (
 		<Flex
@@ -64,8 +55,8 @@ export const SignalSoundSelect: FC = () => {
 				colorPalette="yellow"
 				size="md"
 				width="240px"
-				value={Array.from(selectedSounds)}
-				onValueChange={(event) => updateChosenSounds(event.value)}
+				value={selectedSounds.map((sound) => sound.src)}
+				onValueChange={(event) => updateSelectedSounds(event.value)}
 			>
 				<Select.HiddenSelect/>
 
@@ -86,7 +77,7 @@ export const SignalSoundSelect: FC = () => {
 								const handleClick = (event: MouseEvent<SVGElement>): void => {
 									event.stopPropagation();
 
-									if (nowPlaying === sound.value) {
+									if (playingNowSound?.src === sound.value) {
 										stopSound();
 									} else {
 										playSound(sound.value);
@@ -103,7 +94,7 @@ export const SignalSoundSelect: FC = () => {
 										<Flex alignItems="center" justifyContent="space-between" flexBasis="100%">
 											<Flex alignItems="center" gap="2">
 												<Box fontSize="xx-small">
-													{nowPlaying === sound.value
+													{playingNowSound?.src === sound.value
 														? <FaPause onClick={handleClick}/>
 														: <FaPlay onClick={handleClick}/>}
 												</Box>

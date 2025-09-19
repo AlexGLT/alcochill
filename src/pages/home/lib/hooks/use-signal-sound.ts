@@ -5,80 +5,60 @@ import {
 	useState,
 } from 'react';
 
-import {useStore} from 'effector-react';
-
-import {
-	$isStarted,
-	$chosenSounds,
-	changeChosenSounds,
-} from '@features/timer';
+import {useUnit} from 'effector-react';
+import {sample as choice} from 'es-toolkit';
 
 import {useStableCallback} from '@shared/libs';
-import {SOUND} from '@shared/constants';
-import {takeRandomArrayElement} from '@features/timer/lib/utils';
+import {SOUNDS} from '@shared/constants';
 
-import type {ChangeEvent} from 'react';
-import type {Sound} from '@shared/constants';
+import {
+	$selectedSounds,
+	selectedSoundsUpdated,
+} from '../../model';
 
+import type {Sound} from '@shared/types';
 
-const ALL_SOUNDS = Object.values(SOUND);
 
 type ReturnParams = {
-	isStarted: boolean,
-	nowPlaying: Sound | null,
-	chosenSounds: Set<Sound>,
-	playSound: (sound: Sound) => void,
+	playingNowSound: Sound | undefined,
+	selectedSounds: Array<Sound>,
+	playSound: (src: string) => void,
 	stopSound: () => void,
 	testVolume: () => void,
-	checkChosenSound: (sound: Sound, value: boolean) => void,
-	updateChosenSounds: (sounds: Array<string>) => void,
-	selectAll: unknown,
-	/*
-	 * apply: () => void,
-	 * cancel: () => void,
-	 */
+	updateSelectedSounds: (sounds: Array<string>) => void,
 };
 
 export const useSoundSignal = (): ReturnParams => {
-	const isStarted = useStore($isStarted);
-	const storedChosenSounds = useStore($chosenSounds);
-
-	const [nowPlaying, setNowPlaying] = useState<Sound | null>(null);
+	const [playingNowSound, setPlayingNowSound] = useState<Sound | undefined>(undefined);
 
 	const audioRef = useRef<HTMLAudioElement>(new Audio(''));
 
 	useLayoutEffect(() => {
+		const abortController = new AbortController();
+
 		audioRef.current.addEventListener('ended', () => {
-			setNowPlaying(null);
-		});
+			setPlayingNowSound(undefined);
+		}, {signal: abortController.signal});
+
+		return () => {
+			abortController.abort();
+		};
 	}, []);
 
-	// const [chosenSounds, setChosenSounds] = useState<Set<Sound>>(new Set(storedChosenSounds));
+	const selectedSounds = useUnit($selectedSounds);
 
-	const chosenSounds = new Set(storedChosenSounds);
+	const updateSelectedSounds = (sounds: Array<string>): void => {
+		selectedSoundsUpdated(
+			SOUNDS.filter(({src}) => sounds.includes(src)),
+		);
+	};
 
-	const checkChosenSound = useStableCallback((sound: Sound, value: boolean): void => {
-		const newChosenSounds = new Set(storedChosenSounds);
-
-		if (value) {
-			newChosenSounds.add(sound);
-		} else {
-			newChosenSounds.delete(sound);
-		}
-
-		changeChosenSounds(Array.from(newChosenSounds.values()));
-	});
-
-	const updateChosenSounds = useStableCallback((sounds: Array<string>): void => {
-		changeChosenSounds(Array.from(sounds));
-	});
-
-	const playSound = useCallback((sound: Sound): void => {
+	const playSound = useCallback((src: string): void => {
 		const audio = audioRef.current;
 
-		audio.src = sound;
+		audio.src = src;
 
-		setNowPlaying(sound);
+		setPlayingNowSound(SOUNDS.find(({src: soundSrc}) => soundSrc === src));
 
 		audio.load();
 		audio.play();
@@ -90,51 +70,26 @@ export const useSoundSignal = (): ReturnParams => {
 		audio.pause();
 		audio.load();
 
-		setNowPlaying(null);
+		setPlayingNowSound(undefined);
 	}, []);
 
 	const testVolume = useStableCallback((): void => {
-		const audio = audioRef.current;
+		if (selectedSounds.length) {
+			const audio = audioRef.current;
 
-		audio.src = takeRandomArrayElement(storedChosenSounds) ?? '';
+			audio.src = choice(selectedSounds).src;
 
-		audio.load();
-		void audio.play();
-	});
-
-	const selectAll = useStableCallback(({target: {checked}}: ChangeEvent<HTMLInputElement>): void => {
-		if (checked) {
-			changeChosenSounds(ALL_SOUNDS);
-		} else {
-			changeChosenSounds([]);
+			audio.load();
+			void audio.play();
 		}
 	});
 
-	/*
-	 * const apply = useStableCallback(() => {
-	 * 	changeChosenSounds(Array.from(chosenSounds.values()));
-	 * });
-	 */
-
-	/*
-	 * const cancel = useStableCallback(() => {
-	 * 	setChosenSounds(new Set(storedChosenSounds));
-	 * });
-	 */
-
 	return {
-		nowPlaying,
-		isStarted,
-		chosenSounds,
+		playingNowSound,
+		selectedSounds,
 		playSound,
 		stopSound,
 		testVolume,
-		checkChosenSound,
-		selectAll,
-		updateChosenSounds,
-		/*
-		 * apply,
-		 * cancel,
-		 */
+		updateSelectedSounds,
 	};
 };

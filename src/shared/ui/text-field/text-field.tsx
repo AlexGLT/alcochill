@@ -1,7 +1,10 @@
 import {useId, useLayoutEffect, useState} from 'react';
 import clsx from 'clsx';
 
+import {isDefined} from '@shared/libs';
+
 import {TYPE} from './constants';
+
 import styles from './text-field.module.scss';
 
 import type {FC, ChangeEvent, ReactNode} from 'react';
@@ -9,45 +12,37 @@ import type {InputProps, Type} from './typedef';
 
 
 const DEFAULT_VALUE = '';
-const DEFAULT_INVALID_MESSAGE = 'Incorrect, try again!';
 
 type Props = InputProps & {
+	type?: Type,
 	initialValue?: string | number,
 	value?: string | number,
-	type?: Type,
 	label?: ReactNode,
 	isInvalid?: boolean,
-	invalidMessage?: string,
+	helperMessage?: string,
 };
 
 const TextField: FC<Props> = ({
 	type = TYPE.TEXT,
+	label,
 	placeholder = DEFAULT_VALUE,
-	invalidMessage = DEFAULT_INVALID_MESSAGE,
 	value: externalValue,
 	initialValue = '',
-	label,
 	isInvalid,
+	helperMessage,
 	onChange,
 	...restProps
 }) => {
+	const labelId = useId();
 	const inputId = useId();
 
 	const [value, setValue] = useState(initialValue);
 
 	useLayoutEffect(() => {
-		if (typeof externalValue === 'string' || typeof externalValue === 'number') {
+		if (isDefined(externalValue)) {
 			setValue(externalValue.toString());
 		}
 	}, [externalValue]);
-
-	const fieldContainerClassNames = clsx(styles.textFieldInputContainer, {
-		[styles.textFieldInputContainerInvalid]: isInvalid,
-	});
-
-	const messageClassNames = clsx(styles.textFieldMessage, {
-		[styles.textFieldMessageInvalid]: isInvalid,
-	});
 
 	const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
 		onChange?.(event);
@@ -57,29 +52,43 @@ const TextField: FC<Props> = ({
 
 	return (
 		<div className={styles.textField}>
-			{label && (
-				<label htmlFor={inputId} className={styles.textFieldLabel}>
+			{label ? (
+				<label
+					id={labelId}
+					htmlFor={inputId}
+					className={styles.textFieldLabel}
+				>
 					{label}
 				</label>
-			)}
+			) : null}
 
-			<div className={fieldContainerClassNames}>
+			<div
+				className={clsx(styles.textFieldInputContainer, {
+					[styles.textFieldInputContainerInvalid]: isInvalid,
+				})}
+			>
 				<input
 					{...restProps}
 					className={styles.textFieldInput}
+					aria-invalid={isInvalid}
+					aria-labelledby={labelId}
 					id={inputId}
-					value={value}
 					type={type}
+					value={value}
 					placeholder={placeholder}
 					onChange={handleChange}
 				/>
 			</div>
 
-			{isInvalid && (
-				<small className={messageClassNames}>
-					{invalidMessage}
+			{helperMessage ? (
+				<small
+					className={clsx(styles.textFieldMessage, {
+						[styles.textFieldMessageInvalid]: isInvalid,
+					})}
+				>
+					{helperMessage}
 				</small>
-			)}
+			) : null}
 		</div>
 
 	);

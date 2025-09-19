@@ -5,6 +5,7 @@ import {
 	useRef,
 	useState,
 } from 'react';
+
 import clsx from 'clsx';
 
 import {useStableCallback} from '@shared/libs/hooks';
@@ -12,6 +13,7 @@ import {useStableCallback} from '@shared/libs/hooks';
 import {CounterBlock} from './ui';
 import {parseSeconds} from './utils';
 import {Direction, TIME_IN_SECONDS, TimeMetric} from './constants';
+
 import styles from './count-down.module.scss';
 
 import type {FC, ReactNode} from 'react';
@@ -43,17 +45,17 @@ const CountDown: FC<Props> = ({
 		setRenderedValue(value % maxTime);
 	});
 
-	const timer = useRef<number>();
+	const timer = useRef<number | undefined>(undefined);
 
 	useLayoutEffect(() => {
 		if (isWorking) {
 			timer.current = setInterval(updateRenderedValue, updateFrequency * DEFAULT_TIMEOUT);
 		} else {
-			setInterval(updateRenderedValue, updateFrequency * DEFAULT_TIMEOUT);
+			window.setInterval(updateRenderedValue, updateFrequency * DEFAULT_TIMEOUT);
 		}
 
 		return () => {
-			clearInterval(timer.current);
+			window.clearInterval(timer.current);
 		};
 	}, [isWorking, updateFrequency, updateRenderedValue]);
 
@@ -76,8 +78,8 @@ const CountDown: FC<Props> = ({
 					key: timeMetric,
 					node: (
 						<CounterBlock
+							key={timeMetric}
 							{...{
-								key: timeMetric,
 								index: index * 2,
 								direction,
 								timeSpeed: updateFrequency,
@@ -100,7 +102,7 @@ const CountDown: FC<Props> = ({
 				<Fragment key={key}>
 					{node}
 
-					{index !== array.length - 1 && ':'}
+					{index !== array.length - 1 ? ':' : null}
 				</Fragment>
 			))}
 		</div>

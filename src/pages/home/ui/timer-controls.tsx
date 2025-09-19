@@ -1,49 +1,54 @@
 import Button, {Accent} from '@shared/ui/button';
 import TextField, {TYPE} from '@shared/ui/text-field';
 
-import {useTimeRange, useTimerState} from '../lib/hooks';
+import {useTimeRange, useTimerControlState} from '../lib/hooks';
 
 import styles from '../home.module.scss';
 
 import type {FC} from 'react';
 
 
+const DEFAULT_HELPER_MESSAGE = 'Please enter a time in minutes';
+
 export const TimerControls: FC = () => {
 	const {
-		minTimeInMinutes,
-		isMinTimeInputInvalid,
-		maxTimeInMinutes,
-		isMaxTimeInputInvalid,
+		enteredMinTime,
+		minTimeErrorMessage,
 		updateMinTime,
+		enteredMaxTime,
+		maxTimeErrorMessage,
 		updateMaxTime,
 	} = useTimeRange();
 
 	const {
+		wasStarted,
 		canBeStarted,
-		isStarted,
 		toggleTimer,
-	} = useTimerState();
+	} = useTimerControlState();
 
-	const startButtonCaption = isStarted ? 'Stop' : 'Start';
-
-	const isStartButtonDisabled = (
-		isMinTimeInputInvalid ||
-		isMaxTimeInputInvalid ||
+	const isStartButtonDisabled = !!(
+		minTimeErrorMessage ||
+		maxTimeErrorMessage ||
 		!canBeStarted
 	);
+
+	const startButtonCaption = wasStarted
+		? 'Stop'
+		: 'Start';
 
 	return (
 		<div className={styles.homeControllers}>
 			<TextField
 				type={TYPE.NUMBER}
-				label="Min Time (in minutes)"
-				isInvalid={isMinTimeInputInvalid}
-				initialValue={minTimeInMinutes}
+				label="Min Time"
+				helperMessage={minTimeErrorMessage ?? DEFAULT_HELPER_MESSAGE}
+				isInvalid={!!minTimeErrorMessage}
+				value={enteredMinTime}
 				onChange={updateMinTime}
 			/>
 
 			<Button
-				accent={isStarted ? Accent.DANGER : Accent.SUCCESS}
+				accent={wasStarted ? Accent.DANGER : Accent.SUCCESS}
 				isDisabled={isStartButtonDisabled}
 				onClick={toggleTimer}
 			>
@@ -52,9 +57,10 @@ export const TimerControls: FC = () => {
 
 			<TextField
 				type={TYPE.NUMBER}
-				label="Max Time (in minutes)"
-				isInvalid={isMaxTimeInputInvalid}
-				initialValue={maxTimeInMinutes}
+				label="Max Time"
+				helperMessage={maxTimeErrorMessage ?? DEFAULT_HELPER_MESSAGE}
+				isInvalid={!!maxTimeErrorMessage}
+				value={enteredMaxTime}
 				onChange={updateMaxTime}
 			/>
 		</div>

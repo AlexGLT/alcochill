@@ -1,6 +1,6 @@
 import {TimerCountDown} from '@features/timer';
 
-import {TimerControls, SignalsHistory, SignalSoundSelect} from './ui';
+import {TimerControls, SignalSoundSelect} from './ui';
 
 import styles from './home.module.scss';
 
@@ -10,14 +10,12 @@ import type {FC} from 'react';
 export const HomeView: FC = () => {
 	return (
 		<main className={styles.home}>
-			<TimerCountDown />
+			<TimerCountDown/>
 
-			<TimerControls />
+			<TimerControls/>
 
 			<div className={styles.homeAdditionalButtons}>
-				<SignalsHistory />
-
-				<SignalSoundSelect />
+				<SignalSoundSelect/>
 			</div>
 		</main>
 	);
