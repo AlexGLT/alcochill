@@ -1,4 +1,4 @@
-import type {Sound} from '@shared/constants';
+import type {Sound} from '@shared/types';
 
 
 export type TimerConfig = {

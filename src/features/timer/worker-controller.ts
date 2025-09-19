@@ -29,6 +29,7 @@ export class WorkerController {
 			};
 
 			const worker = new Worker(new URL('./worker-interval.js', import.meta.url), {type: 'module'});
+			this.worker = worker;
 			worker.addEventListener('message', onMessage);
 
 			this.postMessage({

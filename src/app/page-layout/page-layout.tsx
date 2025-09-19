@@ -29,9 +29,9 @@ export const PageLayout: FC<Props> = ({
 
 	return (
 		<div className={classNames}>
-			<Header />
+			<Header/>
 
-			{hasAlcoTimer && <TimerPopover canBeDisplayed={canTimerPopoverBeDisplayed} />}
+			{hasAlcoTimer ? <TimerPopover canBeDisplayed={canTimerPopoverBeDisplayed}/> : null}
 
 			{children}
 

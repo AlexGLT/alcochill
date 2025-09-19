@@ -1,8 +1,6 @@
-import {useStore} from 'effector-react';
-
 import Popover from '@shared/ui/popover/popover';
 
-import {$isStarted} from '../model';
+import {useTimerState} from '../model';
 
 import {TimerCountDown} from './timer-count-down';
 
@@ -12,18 +10,18 @@ import type {FC} from 'react';
 
 
 type Props = {
-	canBeDisplayed: boolean,
+	canBeDisplayed?: boolean,
 };
 
-export const TimerPopover: FC<Props> = ({canBeDisplayed}) => {
-	const isStarted = useStore($isStarted);
+export const TimerPopover: FC<Props> = ({canBeDisplayed = true}) => {
+	const {wasStarted} = useTimerState();
 
 	return (
 		<Popover
-			isOpen={canBeDisplayed && isStarted}
+			isOpen={canBeDisplayed ? wasStarted : false}
 			customClassNames={styles.timerPopover}
 		>
-			<TimerCountDown />
+			<TimerCountDown/>
 		</Popover>
 	);
 };

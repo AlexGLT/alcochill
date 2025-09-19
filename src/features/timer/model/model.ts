@@ -8,6 +8,7 @@ import {
 import {
 	delay,
 	round,
+	randomInt,
 	sample as choice,
 } from 'es-toolkit';
 
@@ -15,12 +16,11 @@ import {nanoid} from 'nanoid';
 
 import {AudioController, convertMsToS} from '@shared/libs';
 
-import {chooseRandomSecondFromInterval} from './lib/utils';
-import {WorkerController} from './worker-controller';
-import {TimerState} from './types';
+import {WorkerController} from '../worker-controller';
+import {TimerState} from '../types';
 
-import type {Sound} from '@shared/constants';
-import type {TimerConfig} from './types';
+import type {Sound} from '@shared/types';
+import type {TimerConfig} from '../types';
 
 
 const audioController = new AudioController();
@@ -31,8 +31,8 @@ export const timerResumed = createEvent();
 export const timerStopped = createEvent();
 export const timerRestarted = createEvent();
 
-const playSignalSoundFx = createEffect<Sound, void, void>((sound) => {
-	audioController.updateSource(sound);
+const playSignalSoundFx = createEffect<Sound, void>((sound) => {
+	audioController.updateSource(sound.src);
 
 	return audioController.play()
 		.catch((error) => {
@@ -43,7 +43,7 @@ const playSignalSoundFx = createEffect<Sound, void, void>((sound) => {
 		});
 });
 
-const $timerState = createStore(TimerState.INITIAL)
+export const $timerState = createStore(TimerState.INITIAL)
 	.on(timerStarted, () => TimerState.RUNNING)
 	.on(playSignalSoundFx, () => TimerState.SIGNALIZING)
 	.on(timerPaused, () => TimerState.PAUSED)
@@ -59,7 +59,7 @@ const DEFAULT_CONFIG: TimerConfig = {
 };
 
 // TODO: throw error and stop timer if params are incorrect
-const $workingTimerParams = createStore(DEFAULT_CONFIG)
+export const $workingTimerParams = createStore(DEFAULT_CONFIG)
 	.on(timerStarted, (_, params) => params)
 	.reset(timerStopped);
 
@@ -71,12 +71,12 @@ export const $counter = createStore(0)
 
 export const $limit = createStore(0)
 	.on(timerStarted, (_, {minTime, maxTime}) => {
-		return chooseRandomSecondFromInterval(minTime, maxTime);
+		return randomInt(minTime, maxTime + 1);
 	})
 	.on(timerRestarted, () => {
 		const {minTime, maxTime} = $workingTimerParams.getState();
 
-		return chooseRandomSecondFromInterval(minTime, maxTime);
+		return randomInt(minTime, maxTime + 1);
 	})
 	.reset(timerStopped);
 
@@ -89,8 +89,8 @@ sample({
 
 sample({
 	clock: $counter,
-	source: {limit: $limit, config: $workingTimerParams},
-	filter: ({limit}, counter) => limit === counter,
+	source: {config: $workingTimerParams, limit: $limit},
+	filter: ({limit}, counter) => limit > 0 && limit === counter,
 	fn: ({config: {sounds}}) => choice(sounds),
 	target: playSignalSoundFx,
 });
@@ -108,20 +108,20 @@ sample({
 
 const DELAY_BEFORE_SIGNAL = 1000;
 
-const notifyBeforeSignalFx = createEffect<void, void, void>(() => {
+const notifyBeforeSignalFx = createEffect<void, void>(() => {
 	window.dispatchEvent(new CustomEvent('timer:pre-signalizing'));
 });
 
 sample({
 	clock: $counter,
 	source: $limit,
-	filter: (limit, counter) => limit > 0 && limit === counter - convertMsToS(DELAY_BEFORE_SIGNAL),
+	filter: (limit, counter) => limit > 0 && (limit === counter - convertMsToS(DELAY_BEFORE_SIGNAL)),
 	target: notifyBeforeSignalFx,
 });
 
 const DELAY_AFTER_SIGNAL = 1000;
 
-const notifyAfterSignalFx = createEffect<void, void, void>(async () => {
+const notifyAfterSignalFx = createEffect<void, void>(async () => {
 	await delay(DELAY_AFTER_SIGNAL);
 
 	window.dispatchEvent(new CustomEvent('timer:post-signalizing'));
