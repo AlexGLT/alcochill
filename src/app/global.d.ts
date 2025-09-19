@@ -1,5 +1,5 @@
 declare namespace React {
-	// eslint-disable-next-line typescript/consistent-indexed-object-style
+	// eslint-disable-next-line typescript/consistent-type-definitions, typescript/consistent-indexed-object-style
 	interface CSSProperties {
 		[key: `--${string}`]: string | number,
 	}

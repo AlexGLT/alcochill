@@ -240,11 +240,12 @@ export const typescriptRules = {
 		ignoreProperties: true,
 	}],
 
+	// TODO: review after https://github.com/typescript-eslint/typescript-eslint/issues/8113 will be closed
 	// https://typescript-eslint.io/rules/no-invalid-void-type
-	'typescript/no-invalid-void-type': [SEVERITY.ERROR, {
-		allowInGenericTypeArguments: true,
-		allowAsThisParameter: true,
-	}],
+	// 'typescript/no-invalid-void-type': [SEVERITY.ERROR, {
+	// 	allowInGenericTypeArguments: true,
+	// 	allowAsThisParameter: true,
+	// }],
 
 	// https://typescript-eslint.io/rules/no-loop-func
 	'typescript/no-loop-func': SEVERITY.ERROR,

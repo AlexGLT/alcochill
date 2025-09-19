@@ -13,11 +13,11 @@ import {
 
 export const $isLoading = fetchRandomMemeFx.pending;
 
-export const $index = createStore<number | null>(null)
+export const $index = createStore<number | undefined>(undefined, {skipVoid: false})
 	.on(moveTo, (_, newState) => newState)
 	.on(previous, (state) => (state ?? 0) - 1)
 	.on(next, (state) => (state ?? 0) + 1)
-	.on(reset, () => null);
+	.on(reset, () => undefined);
 
 export const $list = createStore<Array<string>>([])
 	.on(fetchRandomMemeFx.doneData, (state, newMemeLink) => state.concat(newMemeLink))

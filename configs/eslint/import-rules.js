@@ -11,9 +11,6 @@ export const importRules = {
 	// https://github.com/un-ts/eslint-plugin-import-x/blob/master/docs/rules/export.md
 	'import-x/export': SEVERITY.ERROR,
 
-	// https://github.com/un-ts/eslint-plugin-import-x/blob/master/docs/rules/no-deprecated.md
-	'import-x/no-deprecated': SEVERITY.ERROR,
-
 	// https://github.com/un-ts/eslint-plugin-import-x/blob/master/docs/rules/no-empty-named-blocks.md
 	'import-x/no-empty-named-blocks': SEVERITY.ERROR,
 
@@ -205,12 +202,12 @@ export const importRules = {
 				position: 'after',
 			},
 			{
-				pattern: './**/*.{css,scss,less,styl}',
+				pattern: '{.,..}/**/*.{css,scss,less,styl}',
 				group: 'index',
 				position: 'after',
 			},
 		],
-		pathGroupsExcludedImportTypes: ['builtin', 'external'],
+		pathGroupsExcludedImportTypes: [],
 		distinctGroup: true,
 		warnOnUnassignedImports: true,
 		sortTypesGroup: true,
@@ -225,4 +222,7 @@ export const importRules = {
 	// ============================================
 	// DEPRECATED OR RELATED TO OBSOLETE FUNCTIONAL
 	// ============================================
+
+	// https://github.com/un-ts/eslint-plugin-import-x/blob/master/docs/rules/no-deprecated.md
+	'import-x/no-deprecated': SEVERITY.OFF,
 };

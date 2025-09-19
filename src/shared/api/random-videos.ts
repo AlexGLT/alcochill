@@ -6,7 +6,7 @@ import {
 	isValid,
 } from 'date-fns';
 
-import api, {BASE_URL} from '@shared/core/ky';
+import apiClient, {BASE_URL} from '@shared/core/ky';
 
 
 const VideoSchema = z.object({
@@ -38,7 +38,7 @@ export const getVideosListByRange = (to: string | number = TODAY, from?: string 
 	searchParams.set('dateStart', dateStart.toISOString());
 	searchParams.set('dateEnd', dateEnd.toISOString());
 
-	return api(`v1/videos?${searchParams}`)
+	return apiClient(`v1/videos?${searchParams}`)
 		.then((res) => res.json())
 		.then((res) => VideoListSchema.parse(res))
 		.catch(() => EMPTY_LIST);

@@ -281,8 +281,9 @@ export const stylisticRules = {
 		multilineDetection: 'brackets',
 	}],
 
+	// TODO: recheck
 	// https://eslint.style/rules/default/multiline-comment-style
-	'stylistic/multiline-comment-style': [SEVERITY.ERROR, 'starred-block'],
+	// 'stylistic/multiline-comment-style': [SEVERITY.ERROR, 'starred-block'],
 
 	// https://eslint.style/rules/default/multiline-ternary
 	'stylistic/multiline-ternary': SEVERITY.OFF,

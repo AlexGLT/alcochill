@@ -1,10 +1,10 @@
+import {useLayoutEffect, useState} from 'react';
 import {RouterProvider} from 'react-router-dom';
-import {QueryClientProvider} from '@tanstack/react-query';
-import {ChakraProvider, defaultSystem} from '@chakra-ui/react';
 import Snowfall from 'react-snowfall';
 import {ThemeProvider} from 'next-themes';
-import {useLayoutEffect, useState} from 'react';
 
+import {ChakraProvider, defaultSystem} from '@chakra-ui/react';
+import {QueryClientProvider} from '@tanstack/react-query';
 import {queryClient} from '@shared/core/react-query';
 
 import {router} from './router';
