@@ -1,5 +1,5 @@
 import {useEffect, useRef} from 'react';
-import {useStore} from 'effector-react';
+import {useUnit} from 'effector-react';
 
 import EmptyState from '@shared/ui/empty-state';
 import Card from '@shared/ui/card';
@@ -18,10 +18,10 @@ type Props = {
 };
 
 export const Gallery: FC<Props> = () => {
-	const isLoading = useStore($isLoading);
-	const currentSrc = useStore($currentMemeLink);
+	const isLoading = useUnit($isLoading);
+	const currentSrc = useUnit($currentMemeLink);
 
-	const previousSrc = useRef<string>();
+	const previousSrc = useRef<string | undefined>(undefined);
 
 	useEffect(() => {
 		previousSrc.current = currentSrc;
@@ -33,11 +33,12 @@ export const Gallery: FC<Props> = () => {
 				<Card customClasses={styles.eliteMemesImgContainer}>
 					{currentSrc ? (
 						<>
-							<img className={styles.eliteMemesImg} src={currentSrc} alt="meme" />
-							<div className={styles.eliteMemesGalleryBackground} style={{'--background-image': `url('${currentSrc}')`}} />
+							<img className={styles.eliteMemesImg} src={currentSrc} alt="meme"/>
+
+							<div className={styles.eliteMemesGalleryBackground} style={{'--background-image': `url('${currentSrc}')`}}/>
 						</>
 					) : (
-						<EmptyState />
+						<EmptyState/>
 					)}
 				</Card>
 			</div>
