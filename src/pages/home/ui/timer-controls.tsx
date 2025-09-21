@@ -22,14 +22,12 @@ export const TimerControls: FC = () => {
 
 	const {
 		wasStarted,
-		canBeStarted,
 		toggleTimer,
 	} = useTimerControlState();
 
 	const isStartButtonDisabled = !!(
 		minTimeErrorMessage ||
-		maxTimeErrorMessage ||
-		!canBeStarted
+		maxTimeErrorMessage
 	);
 
 	const startButtonCaption = wasStarted

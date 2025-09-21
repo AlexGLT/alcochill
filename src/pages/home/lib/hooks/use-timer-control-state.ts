@@ -4,7 +4,6 @@ import {useTimerState} from '@features/timer';
 import {useStableCallback} from '@shared/libs';
 
 import {
-	$canBeStarted,
 	$minTime,
 	$maxTime,
 	$selectedSounds,
@@ -13,7 +12,6 @@ import {
 
 type ReturnParams = {
 	wasStarted: boolean,
-	canBeStarted: boolean,
 	toggleTimer: () => void,
 };
 
@@ -21,7 +19,6 @@ export const useTimerControlState = (): ReturnParams => {
 	const minTime = useUnit($minTime);
 	const maxTime = useUnit($maxTime);
 	const selectedSounds = useUnit($selectedSounds);
-	const canBeStarted = useUnit($canBeStarted);
 
 	const {
 		wasStarted,
@@ -44,7 +41,6 @@ export const useTimerControlState = (): ReturnParams => {
 
 	return {
 		wasStarted,
-		canBeStarted,
 		toggleTimer,
 	};
 };

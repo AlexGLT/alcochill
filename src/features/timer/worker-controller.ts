@@ -1,18 +1,20 @@
+import {round} from 'es-toolkit';
+
 import {TimerEventType} from './types';
 
 import type {TimerIncomingMessage, TimerUpcomingMessage} from './types';
 
 
-type noop = () => void;
+const DEFAULT_INTERVAL = 1000;
 
 type InitializationConfig = {
-	interval: number,
+	timeSpeed: number,
 	onCounterUpdate: (counter: number) => void,
 };
 
 export class WorkerController {
 	private worker: Worker | undefined;
-	private cleanup: noop | undefined;
+	private cleanup: (() => void) | undefined;
 
 	private readonly postMessage = (message: TimerIncomingMessage): void => {
 		if (this.worker) {
@@ -22,19 +24,19 @@ export class WorkerController {
 		}
 	};
 
-	initialize = ({interval, onCounterUpdate}: InitializationConfig): void => {
+	initialize = ({timeSpeed, onCounterUpdate}: InitializationConfig): void => {
 		if (!this.worker) {
 			const onMessage = (event: MessageEvent<TimerUpcomingMessage>): void => {
 				onCounterUpdate(event.data.counter);
 			};
 
 			const worker = new Worker(new URL('./worker-interval.js', import.meta.url), {type: 'module'});
-			this.worker = worker;
 			worker.addEventListener('message', onMessage);
+			this.worker = worker;
 
 			this.postMessage({
 				type: TimerEventType.START,
-				interval,
+				interval: round(DEFAULT_INTERVAL / timeSpeed, 2),
 			});
 
 			this.cleanup = (): void => {

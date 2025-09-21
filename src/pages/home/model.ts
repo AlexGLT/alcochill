@@ -2,7 +2,6 @@ import {
 	createEffect,
 	createEvent,
 	createStore,
-	combine,
 	sample,
 } from 'effector';
 
@@ -92,12 +91,3 @@ sample({
 	source: $selectedSounds,
 	target: saveSelectedSoundsFx,
 });
-
-export const $canBeStarted = combine([$minTime, $maxTime, $selectedSounds])
-	.map(([minTime, maxTime, chosenSounds]) => {
-		return (
-			minTime >= 0 &&
-			maxTime > minTime &&
-			!!chosenSounds.length
-		);
-	});

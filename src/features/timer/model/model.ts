@@ -7,16 +7,23 @@ import {
 
 import {
 	delay,
-	round,
 	randomInt,
 	sample as choice,
 } from 'es-toolkit';
 
 import {nanoid} from 'nanoid';
 
-import {AudioController, convertMsToS} from '@shared/libs';
+import {AudioController} from '@shared/libs';
+import {toaster} from '@shared/ui/toast';
 
 import {WorkerController} from '../worker-controller';
+
+import {
+	validateConfig,
+	DELAY_BEFORE_SIGNAL, emitPreSignalEvent,
+	DELAY_AFTER_SIGNAL, emitPostSignalEvent,
+} from '../lib';
+
 import {TimerState} from '../types';
 
 import type {Sound} from '@shared/types';
@@ -31,16 +38,52 @@ export const timerResumed = createEvent();
 export const timerStopped = createEvent();
 export const timerRestarted = createEvent();
 
-const playSignalSoundFx = createEffect<Sound, void>((sound) => {
-	audioController.updateSource(sound.src);
+export const startTimerFx = createEffect<TimerConfig, TimerConfig>((config) => {
+	const errorMessage = validateConfig(config);
 
-	return audioController.play()
+	if (errorMessage) {
+		throw new Error(errorMessage);
+	}
+
+	return config;
+});
+
+const showErrorNotificationFx = createEffect<string, void>((message) => {
+	toaster.create({
+		type: 'error',
+		duration: 30000,
+		closable: true,
+		description: message,
+	});
+});
+
+sample({
+	clock: startTimerFx.doneData,
+	target: timerStarted,
+});
+
+sample({
+	clock: startTimerFx.failData,
+	fn: (error) => error.message,
+	target: showErrorNotificationFx,
+});
+
+const playSignalSoundFx = createEffect<Sound, void>(async ({src}) => {
+	audioController.updateSource(src);
+
+	emitPreSignalEvent();
+	await delay(DELAY_BEFORE_SIGNAL);
+
+	await audioController.play()
 		.catch((error) => {
-			console.error('Error has been occurred during the audio playing', error);
+			console.error(`Error has been occurred during the ${src} playing`, error);
 		})
 		.finally(() => {
 			audioController.clear();
 		});
+
+	await delay(DELAY_AFTER_SIGNAL);
+	emitPostSignalEvent();
 });
 
 export const $timerState = createStore(TimerState.INITIAL)
@@ -51,15 +94,16 @@ export const $timerState = createStore(TimerState.INITIAL)
 	.on(timerStopped, () => TimerState.STOPPED)
 	.on(timerRestarted, () => TimerState.RUNNING);
 
-const DEFAULT_CONFIG: TimerConfig = {
+export const $wasTimerStarted = $timerState.map((state): boolean => {
+	return state !== TimerState.INITIAL && state !== TimerState.STOPPED;
+});
+
+export const $workingTimerParams = createStore<TimerConfig>({
 	minTime: 0,
 	maxTime: 0,
 	timeSpeed: 0,
 	sounds: [],
-};
-
-// TODO: throw error and stop timer if params are incorrect
-export const $workingTimerParams = createStore(DEFAULT_CONFIG)
+})
 	.on(timerStarted, (_, params) => params)
 	.reset(timerStopped);
 
@@ -89,8 +133,12 @@ sample({
 
 sample({
 	clock: $counter,
-	source: {config: $workingTimerParams, limit: $limit},
-	filter: ({limit}, counter) => limit > 0 && limit === counter,
+	source: {
+		config: $workingTimerParams,
+		limit: $limit,
+		wasStarted: $wasTimerStarted,
+	},
+	filter: ({wasStarted, limit}, counter) => wasStarted && limit === counter,
 	fn: ({config: {sounds}}) => choice(sounds),
 	target: playSignalSoundFx,
 });
@@ -100,36 +148,6 @@ sample({
 	source: $timerState,
 	filter: (state) => state === TimerState.SIGNALIZING,
 	target: timerRestarted,
-});
-
-// ============================
-// DOM EVENTS EMITTING ABOUT SIGNALIZING
-// ============================
-
-const DELAY_BEFORE_SIGNAL = 1000;
-
-const notifyBeforeSignalFx = createEffect<void, void>(() => {
-	window.dispatchEvent(new CustomEvent('timer:pre-signalizing'));
-});
-
-sample({
-	clock: $counter,
-	source: $limit,
-	filter: (limit, counter) => limit > 0 && (limit === counter - convertMsToS(DELAY_BEFORE_SIGNAL)),
-	target: notifyBeforeSignalFx,
-});
-
-const DELAY_AFTER_SIGNAL = 1000;
-
-const notifyAfterSignalFx = createEffect<void, void>(async () => {
-	await delay(DELAY_AFTER_SIGNAL);
-
-	window.dispatchEvent(new CustomEvent('timer:post-signalizing'));
-});
-
-sample({
-	clock: playSignalSoundFx.finally,
-	target: notifyAfterSignalFx,
 });
 
 // ============================
@@ -164,33 +182,34 @@ export const $logs = createStore(EMPTY_EVENTS)
 // WORKER INITIALIZATION
 // ============================
 
-const workerController = new WorkerController();
+const worker = new WorkerController();
 
-const DEFAULT_INTERVAL = 1000;
-
-timerStarted.watch(({timeSpeed}) => {
-	workerController.initialize({
-		interval: round(DEFAULT_INTERVAL / timeSpeed, 2),
-		onCounterUpdate: counterUpdated,
-	});
+sample({
+	clock: timerStarted,
+	target: createEffect<TimerConfig, void>(({timeSpeed}) => (
+		worker.initialize({
+			timeSpeed,
+			onCounterUpdate: counterUpdated,
+		})
+	)),
 });
 
-timerPaused.watch(() => {
-	workerController.pause();
+sample({
+	clock: [timerPaused, playSignalSoundFx],
+	target: createEffect(() => worker.pause()),
 });
 
-playSignalSoundFx.watch(() => {
-	workerController.pause();
+sample({
+	clock: timerResumed,
+	target: createEffect(() => worker.resume()),
 });
 
-timerResumed.watch(() => {
-	workerController.resume();
+sample({
+	clock: timerRestarted,
+	target: createEffect(() => worker.restart()),
 });
 
-timerRestarted.watch(() => {
-	workerController.restart();
-});
-
-timerStopped.watch(() => {
-	workerController.destroy();
+sample({
+	clock: timerStopped,
+	target: createEffect(() => worker.destroy()),
 });

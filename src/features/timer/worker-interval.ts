@@ -5,99 +5,74 @@ import type {TimerIncomingMessage, TimerUpcomingMessage} from './types';
 
 const DEFAULT_INTERVAL = 1000;
 
-class Timer {
-	private activeTimerId: number | undefined;
-	private activeInterval: number | undefined;
+let activeTimerId: number | undefined;
+let activeInterval: number | undefined;
 
-	private counter = 0;
+let counter = 0;
 
-	updateCounter = (value: number): void => {
-		this.counter = value;
+const updateCounter = (value: number): void => {
+	counter = value;
 
-		self.postMessage({
-			type: 'UPDATE',
-			counter: value,
-		} satisfies MessageEvent<TimerUpcomingMessage>['data']);
-	};
+	self.postMessage({
+		type: 'UPDATE',
+		counter: value,
+	} satisfies MessageEvent<TimerUpcomingMessage>['data']);
+};
 
-	private readonly clearInterval = (): void => {
-		if (!isNumber(this.activeTimerId)) {
-			console.error('Timer was not started!');
-		}
+const destroyInterval = (): void => {
+	if (!isNumber(activeTimerId)) {
+		console.error('Timer was not started!');
+	}
 
-		self.clearInterval(this.activeTimerId);
-		this.activeTimerId = undefined;
-	};
+	self.clearInterval(activeTimerId);
+	activeTimerId = undefined;
+};
 
-	private readonly setupInterval = (): void => {
-		if (isNumber(this.activeTimerId)) {
-			console.error('Timer is already running!');
-			this.clearInterval();
-		}
+const setupInterval = (interval?: number): void => {
+	if (isNumber(activeTimerId)) {
+		console.error('Timer is already running!');
+		destroyInterval();
+	}
 
-		if (!isNumber(this.activeInterval)) {
-			console.error('Incorrect interval!');
-		}
+	if (!isNumber(activeInterval) && !isNumber(interval)) {
+		console.error('Incorrect interval!');
+	}
 
-		this.activeTimerId = self.setInterval(() => {
-			this.updateCounter(this.counter + 1);
-		}, this.activeInterval ?? DEFAULT_INTERVAL);
-	};
+	activeInterval = interval ?? activeInterval ?? DEFAULT_INTERVAL;
 
-	start = (interval: number): void => {
-		this.activeInterval = interval;
-
-		this.setupInterval();
-	};
-
-	pause = (): void => {
-		this.clearInterval();
-	};
-
-	resume = (): void => {
-		this.setupInterval();
-	};
-
-	stop = (): void => {
-		this.clearInterval();
-		this.activeInterval = undefined;
-	};
-
-	restart = (): void => {
-		this.updateCounter(0);
-
-		this.setupInterval();
-	};
-}
-
-const timer = new Timer();
+	activeTimerId = self.setInterval(() => {
+		updateCounter(counter + 1);
+	}, activeInterval);
+};
 
 self.addEventListener('message', (event: MessageEvent<TimerIncomingMessage>) => {
 	const {data} = event;
 
 	switch (data.type) {
 		case 'START': {
-			timer.start(data.interval);
+			setupInterval(data.interval);
 			break;
 		}
 
 		case 'PAUSE': {
-			timer.pause();
+			destroyInterval();
 			break;
 		}
 
 		case 'RESUME': {
-			timer.resume();
+			setupInterval();
 			break;
 		}
 
 		case 'STOP': {
-			timer.stop();
+			destroyInterval();
+			activeInterval = undefined;
 			break;
 		}
 
 		case 'RESTART': {
-			timer.restart();
+			updateCounter(0);
+			setupInterval();
 			break;
 		}
 

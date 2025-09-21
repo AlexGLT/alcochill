@@ -6,9 +6,8 @@ import {
 	Select,
 	Text,
 	Flex,
-	Box,
+	IconButton,
 } from '@chakra-ui/react';
-
 
 import Button from '@shared/ui/button';
 import {SOUNDS} from '@shared/constants';
@@ -49,11 +48,10 @@ export const SignalSoundSelect: FC = () => {
 			</Button>
 
 			<Select.Root
+				variant="subtle"
 				multiple={true}
 				collection={ALL_SOUNDS}
-				variant="subtle"
-				colorPalette="yellow"
-				size="md"
+				// size="md"
 				width="240px"
 				value={selectedSounds.map((sound) => sound.src)}
 				onValueChange={(event) => updateSelectedSounds(event.value)}
@@ -74,7 +72,7 @@ export const SignalSoundSelect: FC = () => {
 					<Select.Positioner>
 						<Select.Content>
 							{ALL_SOUNDS.items.map((sound) => {
-								const handleClick = (event: MouseEvent<SVGElement>): void => {
+								const handleClick = (event: MouseEvent<HTMLButtonElement>): void => {
 									event.stopPropagation();
 
 									if (playingNowSound?.src === sound.value) {
@@ -85,19 +83,14 @@ export const SignalSoundSelect: FC = () => {
 								};
 
 								return (
-									<Select.Item
-										key={sound.value}
-										item={sound}
-										padding="2"
-										fontSize="xs"
-									>
+									<Select.Item key={sound.value} item={sound}>
 										<Flex alignItems="center" justifyContent="space-between" flexBasis="100%">
 											<Flex alignItems="center" gap="2">
-												<Box fontSize="xx-small">
+												<IconButton variant="ghost" size="2xs" onClick={handleClick}>
 													{playingNowSound?.src === sound.value
-														? <FaPause onClick={handleClick}/>
-														: <FaPlay onClick={handleClick}/>}
-												</Box>
+														? <FaPause/>
+														: <FaPlay/>}
+												</IconButton>
 
 												{sound.label}
 											</Flex>

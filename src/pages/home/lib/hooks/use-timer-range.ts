@@ -78,25 +78,13 @@ export const useTimeRange = (): ReturnParams => {
 		}
 	});
 
-	const minTimeErrorMessageExtended = minTimeErrorMessage || (
-		Number.parseFloat(enteredMinTime) >= Number.parseFloat(enteredMaxTime)
-			? 'Min time has to be less than max time!'
-			: undefined
-	);
-
-	const maxTimeErrorMessageExtended = maxTimeErrorMessage || (
-		Number.parseFloat(enteredMaxTime) <= Number.parseFloat(enteredMinTime)
-			? 'Max time has to be greater than min time!'
-			: undefined
-	);
-
 	return {
 		enteredMinTime,
-		minTimeErrorMessage: minTimeErrorMessageExtended,
+		minTimeErrorMessage,
 		updateMinTime,
 
 		enteredMaxTime,
-		maxTimeErrorMessage: maxTimeErrorMessageExtended,
+		maxTimeErrorMessage,
 		updateMaxTime,
 	};
 };

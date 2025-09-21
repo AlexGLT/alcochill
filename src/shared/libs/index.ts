@@ -4,8 +4,6 @@ export {createTimeoutPromise} from './create-timeout-promise';
 
 export {usePrevious, useStableCallback} from './hooks';
 
-export {convertMsToS} from './convert-ms-to-s';
-
 export {
 	isDefined,
 	isNumber,

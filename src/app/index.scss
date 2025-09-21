@@ -1,5 +1,6 @@
 @use "sass:color";
-@use './normalizr';
+// breaks chakra-ui styles
+// @use './normalizr';
 
 :root {
 	font-family: sans-serif;
