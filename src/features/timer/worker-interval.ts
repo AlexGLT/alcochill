@@ -1,4 +1,4 @@
-import {isNumber} from '@shared/libs';
+import {isNumber} from '../../shared/libs';
 
 import type {TimerIncomingMessage, TimerUpcomingMessage} from './types';
 
