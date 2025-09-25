@@ -4,6 +4,7 @@ import homePage from '@pages/home';
 import gamesPage from '@pages/games';
 import eliteMemesPage from '@pages/elite-memes';
 import eliteVideosPage from '@pages/elite-videos';
+import authPage from '@pages/auth';
 
 import {PageLayout} from './page-layout';
 
@@ -13,10 +14,8 @@ export const router = createBrowserRouter([
 		path: homePage.path,
 		element: (
 			<PageLayout
-				{...{
-					...homePage.params,
-					currentPath: homePage.path,
-				}}
+				{...homePage.params}
+				currentPath={homePage.path}
 			>
 				{homePage.element}
 			</PageLayout>
@@ -26,10 +25,8 @@ export const router = createBrowserRouter([
 		path: gamesPage.path,
 		element: (
 			<PageLayout
-				{...{
-					...gamesPage.params,
-					currentPath: gamesPage.path,
-				}}
+				{...gamesPage.params}
+				currentPath={gamesPage.path}
 			>
 				{gamesPage.element}
 			</PageLayout>
@@ -39,10 +36,8 @@ export const router = createBrowserRouter([
 		path: eliteMemesPage.path,
 		element: (
 			<PageLayout
-				{...{
-					...eliteMemesPage.params,
-					currentPath: eliteMemesPage.path,
-				}}
+				{...eliteMemesPage.params}
+				currentPath={eliteMemesPage.path}
 			>
 				{eliteMemesPage.element}
 			</PageLayout>
@@ -52,12 +47,21 @@ export const router = createBrowserRouter([
 		path: eliteVideosPage.path,
 		element: (
 			<PageLayout
-				{...{
-					...eliteVideosPage.params,
-					currentPath: eliteVideosPage.path,
-				}}
+				{...eliteVideosPage.params}
+				currentPath={eliteVideosPage.path}
 			>
 				{eliteVideosPage.element}
+			</PageLayout>
+		),
+	},
+	{
+		path: authPage.path,
+		element: (
+			<PageLayout
+				{...authPage.params}
+				currentPath={authPage.path}
+			>
+				{authPage.element}
 			</PageLayout>
 		),
 	},
