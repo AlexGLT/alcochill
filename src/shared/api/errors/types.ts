@@ -1,0 +1,11 @@
+export enum ErrorReason {
+	PARSE_ERROR = 'PARSE_ERROR',
+	BAD_REQUEST = 'BAD_REQUEST',
+	UNAUTHORIZED = 'UNAUTHORIZED',
+	CONFLICT = 'CONFLICT',
+	UNEXPECTED_RESPONSE = 'UNEXPECTED_RESPONSE',
+}
+
+export type Error = {
+	reason: ErrorReason,
+};

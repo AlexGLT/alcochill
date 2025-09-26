@@ -1,3 +1,3 @@
-export const isString = (param: unknown): param is string => {
-	return typeof param === 'string';
+export const isString = (arg: unknown): arg is string => {
+	return typeof arg === 'string';
 };
