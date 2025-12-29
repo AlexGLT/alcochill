@@ -8,9 +8,9 @@ import type {FC} from 'react';
 export const EliteMemesView: FC = () => {
 	return (
 		<main className={styles.eliteMemes}>
-			<Gallery />
+			<Gallery/>
 
-			<Controllers />
+			<Controllers/>
 		</main>
 	);
 };

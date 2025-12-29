@@ -165,9 +165,6 @@ export const stylisticRules = {
 		allowLeadingUnderscore: false,
 	}],
 
-	// https://eslint.style/rules/default/jsx-props-no-multi-spaces
-	'stylistic/jsx-props-no-multi-spaces': SEVERITY.ERROR,
-
 	// https://eslint.style/rules/default/jsx-quotes
 	'stylistic/jsx-quotes': [SEVERITY.ERROR, 'prefer-double'],
 
@@ -251,6 +248,23 @@ export const stylisticRules = {
 	// TODO: return to this rule later
 	// https://eslint.style/rules/default/lines-between-class-members
 	'stylistic/lines-between-class-members': SEVERITY.OFF,
+
+	'stylistic/exp-list-style': [SEVERITY.ERROR, {
+		singleLine: {
+			spacing: 'never',
+			maxItems: 3,
+		},
+		multiLine: {
+			minItems: 0,
+		},
+		overrides: {
+			'{}': {
+				singleLine: {
+					spacing: 'never',
+				},
+			},
+		},
+	}],
 
 	// https://eslint.style/rules/default/max-len
 	'stylistic/max-len': [SEVERITY.ERROR, {
@@ -376,6 +390,7 @@ export const stylisticRules = {
 	'stylistic/object-curly-spacing': [SEVERITY.ERROR, 'never', {
 		arraysInObjects: false,
 		objectsInObjects: false,
+		emptyObjects: 'never',
 	}],
 
 	// https://eslint.style/rules/default/object-property-newline
@@ -391,6 +406,7 @@ export const stylisticRules = {
 		overrides: {
 			'?': 'ignore',
 			':': 'ignore',
+			'|': 'ignore',
 		},
 	}],
 
@@ -486,18 +502,6 @@ export const stylisticRules = {
 	// https://eslint.style/rules/default/template-tag-spacing
 	'stylistic/template-tag-spacing': [SEVERITY.ERROR, 'never'],
 
-	// https://eslint.style/rules/default/type-annotation-spacing
-	'stylistic/type-annotation-spacing': [SEVERITY.ERROR, {
-		before: false,
-		after: true,
-		overrides: {
-			arrow: {
-				before: true,
-				after: true,
-			},
-		},
-	}],
-
 	// https://eslint.style/rules/default/type-generic-spacing
 	'stylistic/type-generic-spacing': SEVERITY.ERROR,
 
@@ -517,4 +521,17 @@ export const stylisticRules = {
 		before: false,
 		after: true,
 	}],
+
+	// ============================================
+	// DEPRECATED OR RELATED TO OBSOLETE FUNCTIONAL
+	// ============================================
+
+	// https://eslint.style/rules/default/jsx-indent
+	'stylistic/jsx-indent': SEVERITY.OFF,
+
+	// https://eslint.style/rules/default/jsx-props-no-multi-spaces
+	'stylistic/jsx-props-no-multi-spaces': SEVERITY.OFF,
+
+	// https://eslint.style/rules/default/type-annotation-spacing
+	'stylistic/type-annotation-spacing': SEVERITY.OFF,
 };

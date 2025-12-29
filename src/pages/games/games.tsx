@@ -12,7 +12,7 @@ const pageConfig: PageConfig = {
 	id: PAGE_ID,
 	name: PAGE_NAME,
 	path: PAGE_PATH,
-	element: <GamesView />,
+	element: <GamesView/>,
 	params: {
 		isSinglePage: true,
 		hasCenteredContent: true,

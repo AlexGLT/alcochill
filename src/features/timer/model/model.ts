@@ -20,8 +20,10 @@ import {WorkerController} from '../worker-controller';
 
 import {
 	validateConfig,
-	DELAY_BEFORE_SIGNAL, emitPreSignalEvent,
-	DELAY_AFTER_SIGNAL, emitPostSignalEvent,
+	DELAY_BEFORE_SIGNAL,
+	emitPreSignalEvent,
+	DELAY_AFTER_SIGNAL,
+	emitPostSignalEvent,
 } from '../lib';
 
 import {TimerState} from '../types';

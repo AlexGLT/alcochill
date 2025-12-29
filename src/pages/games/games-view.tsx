@@ -1,6 +1,5 @@
 import Card from '@shared/ui/card';
 
-import styles from './games.module.scss';
 
 import {usePlayers, useRandom} from './hooks';
 import {PlayerInput} from './ui/player-input';
@@ -8,14 +7,12 @@ import {PlayersList} from './ui/players-list';
 import {Controls} from './ui/controls';
 import {Teams} from './ui/teams';
 
+import styles from './games.module.scss';
+
 import type {FC} from 'react';
 
 
-type Props = {
-
-};
-
-export const GamesView: FC<Props> = ({}) => {
+export const GamesView: FC = () => {
 	const {
 		players,
 		addPlayer,
@@ -34,10 +31,10 @@ export const GamesView: FC<Props> = ({}) => {
 		<main className={styles.games}>
 			<div className={styles.gamesMainContent}>
 				<div className={styles.gamesPlayerAdditionContainer}>
-					<PlayerInput {...{addPlayer}} />
+					<PlayerInput {...{addPlayer}}/>
 
 					<Card customClasses={styles.gamesCard}>
-						<PlayersList {...{players, removePlayer}} />
+						<PlayersList {...{players, removePlayer}}/>
 					</Card>
 				</div>
 

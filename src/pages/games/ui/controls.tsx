@@ -1,5 +1,3 @@
-import {useState} from 'react';
-
 import Button, {Accent} from '@shared/ui/button';
 import TextField, {TYPE} from '@shared/ui/text-field';
 import {useStableCallback} from '@shared/libs';
@@ -35,7 +33,8 @@ export const Controls: FC<Props> = ({
 			<TextField
 				type={TYPE.NUMBER}
 				value={teamCount}
-				onChange={onInputChange} />
+				onChange={onInputChange}
+			/>
 
 			<Button
 				accent={Accent.SUCCESS}

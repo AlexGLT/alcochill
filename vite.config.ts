@@ -18,5 +18,5 @@ export default defineConfig({
 
 		},
 	},
-	assetsInclude: ['./audio']
+	assetsInclude: ['./audio'],
 });

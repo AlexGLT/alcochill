@@ -1,8 +1,8 @@
 import {useState, useLayoutEffect, useRef} from 'react';
-import {useStore} from 'effector-react';
 import clsx from 'clsx';
 
 import {CSSVariable} from '../constants';
+
 import styles from '../count-down.module.scss';
 
 import type {FC} from 'react';
@@ -29,7 +29,7 @@ export const CounterBox: FC<Props> = ({
 	const previousValue = useRef(currentValue);
 
 	useLayoutEffect(() => {
-		requestAnimationFrame(() => {
+		window.requestAnimationFrame(() => {
 			setMountedValue(currentValue);
 		});
 	}, [currentValue]);
@@ -48,8 +48,11 @@ export const CounterBox: FC<Props> = ({
 		'--animation-delay': animationDelay,
 	};
 
-	// @ts-expect-error WHY: temp
-	const className = clsx(styles.countDownBox, window.dangerZonesEnabled[window.dangerZones.ROTATE] && isInDangerZone && styles.countDownBoxDanger);
+	const className = clsx(
+		styles.countDownBox,
+		// @ts-expect-error temp
+		window.dangerZonesEnabled[window.dangerZones.ROTATE] && isInDangerZone && styles.countDownBoxDanger, // eslint-disable-line typescript/no-unsafe-argument, typescript/no-unsafe-member-access
+	);
 
 	return (
 		<div className={className} style={customStyle}>
@@ -57,11 +60,11 @@ export const CounterBox: FC<Props> = ({
 				{currentValue}
 			</div>
 
-			{previousValue.current !== currentValue && (
+			{previousValue.current !== currentValue ? (
 				<div key={previousValue.current} className={previousBoxClassName}>
 					{previousValue.current}
 				</div>
-			)}
+			) : null}
 		</div>
 	);
 };
