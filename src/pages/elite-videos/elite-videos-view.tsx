@@ -1,32 +1,66 @@
 import {
 	useCallback,
 	useLayoutEffect,
+	useMemo,
 	useRef,
 	useState,
 } from 'react';
 
 import {FaChevronUp, FaChevronDown} from 'react-icons/fa6';
-import {useQuery} from '@tanstack/react-query';
 import clsx from 'clsx';
 import {shuffle} from 'es-toolkit';
+import {useUnit} from 'effector-react';
 
+import {
+	addDays,
+	addYears,
+	isValid,
+} from 'date-fns';
+
+import {useQuery} from '@tanstack/react-query';
 import {useStableCallback} from '@shared/libs';
-import {getVideosListByRange, getRandomVideoUrl} from '@shared/api/random-videos';
+import {getRandomVideoUrl, rateVideoFx, getVideosListByRangeFx} from '@shared/api/random-videos';
+import {Rating} from '@shared/ui/rating';
 
 import styles from './elite-videos.module.scss';
 
 import type {FC} from 'react';
-import type {VideoList} from '@shared/api/random-videos';
+import type {Video} from '@shared/api/random-videos';
 
 
 type DIRECTION = 'DOWN' | 'UP';
+const TODAY = Date.now();
 
-const EMPTY_LIST: VideoList = [];
+const EMPTY_LIST: Array<Video> = [];
 
 export const EliteVideosView: FC = () => {
+	const [getVideosListByRange, rateVideo] = useUnit([getVideosListByRangeFx, rateVideoFx]);
+
+	const searchParams = useMemo(() => {
+		const from = undefined;
+		const to = TODAY;
+
+		const dateEnd = isValid(to)
+			? addDays(to, 1)
+			: addDays(TODAY, 1);
+
+		// eslint-disable-next-line typescript/no-unnecessary-condition
+		const dateStart = from && isValid(from)
+			? new Date(from)
+			: addYears(dateEnd, -1);
+
+		return {
+			dateStart: dateStart.toISOString().split('T')[0],
+			dateEnd: dateEnd.toISOString().split('T')[0],
+		};
+	}, []);
+
 	const {data = EMPTY_LIST} = useQuery({
 		queryKey: ['videos'],
-		queryFn: () => getVideosListByRange(),
+		queryFn: ({signal}) => getVideosListByRange({
+			meta: searchParams,
+			options: {signal},
+		}),
 	});
 
 	const [currentIndex, setCurrentIndex] = useState(0);
@@ -34,6 +68,7 @@ export const EliteVideosView: FC = () => {
 
 	useLayoutEffect(() => {
 		setVideos(shuffle(data));
+		// setVideos(data);
 	}, [data]);
 
 	const previousVideo = currentIndex - 1 >= 0 ? videos.at(currentIndex - 1) : undefined;
@@ -93,10 +128,12 @@ export const EliteVideosView: FC = () => {
 
 	const openNextVideo = useStableCallback((): void => {
 		changeIndex('UP');
+		document.body.focus();
 	});
 
 	const openPreviousVideo = useStableCallback((): void => {
 		changeIndex('DOWN');
+		document.body.focus();
 	});
 
 	const togglePlay = useStableCallback((): void => {
@@ -111,6 +148,27 @@ export const EliteVideosView: FC = () => {
 		}
 	});
 
+	const rateTheVideo = useStableCallback((rating: number): void => {
+		const fileId = currentVideo?.fileId;
+
+		if (fileId) {
+			setVideos((previousVideos) => {
+				return previousVideos.map((video) => {
+					if (video.fileId === currentVideo.fileId) {
+						return {
+							...video,
+							rating,
+						};
+					}
+
+					return video;
+				});
+			});
+
+			rateVideo({meta: {fileId, rating}});
+		}
+	});
+
 	useLayoutEffect(() => {
 		const onKeyDown = (event: KeyboardEvent): void => {
 			if (event.key === 'ArrowDown') {
@@ -119,17 +177,30 @@ export const EliteVideosView: FC = () => {
 				openPreviousVideo();
 			} else if (event.key === ' ') {
 				togglePlay();
+			} else if (event.key === '1') {
+				rateTheVideo(1);
+			} else if (event.key === '2') {
+				rateTheVideo(2);
+			} else if (event.key === '3') {
+				rateTheVideo(3);
+			} else if (event.key === '4') {
+				rateTheVideo(4);
+			} else if (event.key === '5') {
+				rateTheVideo(5);
 			}
 		};
 
-		playerContainerRef.current?.addEventListener('keydown', onKeyDown);
 		window.addEventListener('keydown', onKeyDown);
 
 		return () => {
-			playerContainerRef.current?.removeEventListener('keydown', onKeyDown);
 			window.removeEventListener('keydown', onKeyDown);
 		};
-	}, []);
+	}, [
+		openNextVideo,
+		openPreviousVideo,
+		togglePlay,
+		rateTheVideo,
+	]);
 
 	return (
 		<main className={styles.main}>
@@ -146,6 +217,16 @@ export const EliteVideosView: FC = () => {
 				{currentVideo?.timestamp ? (
 					<div className={styles.timestamp}>
 						{new Date(currentVideo.timestamp).toLocaleString()}
+					</div>
+				) : null}
+
+				{currentVideo ? (
+					<div className={styles.rating}>
+						<Rating
+							id={currentVideo.fileId}
+							value={currentVideo.rating}
+							onChange={rateTheVideo}
+						/>
 					</div>
 				) : null}
 
@@ -182,10 +263,15 @@ export const EliteVideosView: FC = () => {
 
 				{nextVideo ? (
 					<video
-						ref={previousVideoContainerRef}
+						ref={nextVideoContainerRef}
 						key={nextVideo.fileId}
 						src={getRandomVideoUrl(nextVideo.fileId)}
+						autoPlay={false}
+						loop={true}
 						controls={true}
+						disablePictureInPicture={true}
+						disableRemotePlayback={true}
+						controlsList="nofullscreen noremoteplayback noplaybackrate"
 						className={clsx(styles.videoBlock, styles.videoBlockNext)}
 						onTransitionEndCapture={onAnimationEnd}
 					/>
