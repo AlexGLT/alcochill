@@ -1,4 +1,5 @@
 declare global {
+	// eslint-disable-next-line typescript/consistent-type-definitions
 	interface Window {
 		timer: {
 			sounds: Record<string, string>,

@@ -13,10 +13,8 @@ export const router = createBrowserRouter([
 		path: homePage.path,
 		element: (
 			<PageLayout
-				{...{
-					...homePage.params,
-					currentPath: homePage.path,
-				}}
+				{...homePage.params}
+				currentPath={homePage.path}
 			>
 				{homePage.element}
 			</PageLayout>
@@ -26,10 +24,8 @@ export const router = createBrowserRouter([
 		path: gamesPage.path,
 		element: (
 			<PageLayout
-				{...{
-					...gamesPage.params,
-					currentPath: gamesPage.path,
-				}}
+				{...gamesPage.params}
+				currentPath={gamesPage.path}
 			>
 				{gamesPage.element}
 			</PageLayout>
@@ -39,10 +35,8 @@ export const router = createBrowserRouter([
 		path: eliteMemesPage.path,
 		element: (
 			<PageLayout
-				{...{
-					...eliteMemesPage.params,
-					currentPath: eliteMemesPage.path,
-				}}
+				{...eliteMemesPage.params}
+				currentPath={eliteMemesPage.path}
 			>
 				{eliteMemesPage.element}
 			</PageLayout>
@@ -52,10 +46,8 @@ export const router = createBrowserRouter([
 		path: eliteVideosPage.path,
 		element: (
 			<PageLayout
-				{...{
-					...eliteVideosPage.params,
-					currentPath: eliteVideosPage.path,
-				}}
+				{...eliteVideosPage.params}
+				currentPath={eliteVideosPage.path}
 			>
 				{eliteVideosPage.element}
 			</PageLayout>

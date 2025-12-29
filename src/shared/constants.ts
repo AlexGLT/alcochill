@@ -71,6 +71,6 @@ window.toggleDangerZone = (dangerZone: string) => {
 	// @ts-expect-error WHY: temp
 	if (dangerZone in window.dangerZones) {
 		// @ts-expect-error WHY: temp
-		window.dangerZonesEnabled[dangerZone] = !window.dangerZonesEnabled[dangerZone];
+		window.dangerZonesEnabled[dangerZone] = !window.dangerZonesEnabled[dangerZone]; // eslint-disable-line typescript/no-unsafe-member-access
 	}
 };

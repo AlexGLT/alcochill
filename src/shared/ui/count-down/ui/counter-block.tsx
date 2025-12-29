@@ -1,7 +1,6 @@
-import styles from '../count-down.module.scss';
-
 import {CounterBox} from './counter-box';
 
+import styles from '../count-down.module.scss';
 
 import type {FC} from 'react';
 import type {Direction} from '../constants';

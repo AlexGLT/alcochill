@@ -14,7 +14,8 @@ export const Teams: FC<Props> = ({teams}) => {
 		<div className={styles.gamesTeamsList}>
 			{teams.length ? (
 				teams.map((randomTeam, index) => (
-					<Card customClasses={`${styles.gamesCard} ${styles.gamesTeam}`}>
+					// eslint-disable-next-line react/no-array-index-key
+					<Card key={index} customClasses={`${styles.gamesCard} ${styles.gamesTeam}`}>
 						<h2>
 							Team
 							{' '}

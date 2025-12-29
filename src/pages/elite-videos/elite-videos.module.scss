@@ -97,13 +97,6 @@
 	}
 }
 
-.video-author {
-	position: absolute;
-
-	top: 0;
-	left: 0;
-}
-
 .sender {
 	position: absolute;
 	z-index: 5;
@@ -122,6 +115,18 @@
 	z-index: 5;
 
 	font-size: 1.5rem;
+
+	background-color: #373737;
+	border-radius: 8px;
+
+	padding: 12px;
+}
+
+.rating {
+	position: absolute;
+	right: 0;
+	bottom: 10%;
+	z-index: 5;
 
 	background-color: #373737;
 	border-radius: 8px;

@@ -2,9 +2,9 @@ import {useLayoutEffect, useState} from 'react';
 import {RouterProvider} from 'react-router-dom';
 import Snowfall from 'react-snowfall';
 
-import {QueryClientProvider} from '@tanstack/react-query';
-import {queryClient} from '@shared/core/react-query';
-import ThemeProvider from '@shared/ui/theme-provider';
+import {ReactQueryProvider} from '@shared/core/react-query';
+import {ThemeProvider} from '@shared/core/chakra';
+import {ExplicitStarter} from '@shared/core/effector';
 import Toaster from '@shared/ui/toast';
 
 import {router} from './router';
@@ -23,14 +23,16 @@ export const App: FC = () => {
 	}, []);
 
 	return (
-		<QueryClientProvider client={queryClient}>
-			<ThemeProvider>
-				<RouterProvider router={router}/>
+		<ExplicitStarter>
+			<ReactQueryProvider>
+				<ThemeProvider>
+					<RouterProvider router={router}/>
 
-				{showSnow ? <Snowfall/> : null}
+					{showSnow ? <Snowfall/> : null}
 
-				<Toaster/>
-			</ThemeProvider>
-		</QueryClientProvider>
+					<Toaster/>
+				</ThemeProvider>
+			</ReactQueryProvider>
+		</ExplicitStarter>
 	);
 };

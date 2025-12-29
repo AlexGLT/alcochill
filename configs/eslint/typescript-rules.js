@@ -115,7 +115,7 @@ export const typescriptRules = {
 
 	// https://typescript-eslint.io/rules/max-params
 	'typescript/max-params': [SEVERITY.ERROR, {
-		max: 3,
+		max: 4,
 		countVoidThis: false,
 	}],
 
@@ -274,7 +274,14 @@ export const typescriptRules = {
 	'typescript/no-misused-promises': [SEVERITY.ERROR, {
 		checksConditionals: true,
 		checksSpreads: true,
-		checksVoidReturn: true,
+		checksVoidReturn: {
+			arguments: true,
+			attributes: false,
+			inheritedMethods: true,
+			properties: true,
+			returns: true,
+			variables: true,
+		},
 	}],
 
 	// https://typescript-eslint.io/rules/no-misused-spread

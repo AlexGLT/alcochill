@@ -31,7 +31,7 @@
 		"strictFunctionTypes": false,
 		"strictNullChecks": true,
 		"strictPropertyInitialization": true,
-		"types": [],
+		"types": ["vite/client"],
 
 		// will be overridden by ts-eslint
 		"allowUnreachableCode": true,

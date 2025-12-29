@@ -21,11 +21,9 @@ const PageLayout: FC<Props> = ({
 	});
 
 	return (
-		<>
-			<main className={classNames}>
-				{children}
-			</main>
-		</>
+		<main className={classNames}>
+			{children}
+		</main>
 	);
 };
 

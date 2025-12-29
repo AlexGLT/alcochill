@@ -12,7 +12,12 @@ import {useStableCallback} from '@shared/libs/hooks';
 
 import {CounterBlock} from './ui';
 import {parseSeconds} from './utils';
-import {Direction, TIME_IN_SECONDS, TimeMetric} from './constants';
+
+import {
+	Direction,
+	TIME_IN_SECONDS,
+	TimeMetric,
+} from './constants';
 
 import styles from './count-down.module.scss';
 
@@ -92,7 +97,13 @@ const CountDown: FC<Props> = ({
 
 				return acc;
 			}, []);
-	}, [parsedTime, maxTime, updateFrequency, direction]);
+	}, [
+		parsedTime,
+		maxTime,
+		updateFrequency,
+		direction,
+		isInDangerZone,
+	]);
 
 	const classNames = clsx(styles.countDown);
 

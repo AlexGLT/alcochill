@@ -16,12 +16,7 @@ import styles from '../elite-memes.module.scss';
 import type {FC} from 'react';
 
 
-type Props = {
-
-	// s s
-};
-
-export const Controllers: FC<Props> = () => {
+export const Controllers: FC = () => {
 	const index = useStore($index);
 	const isLoading = useStore($isLoading);
 
@@ -32,10 +27,13 @@ export const Controllers: FC<Props> = () => {
 
 	return (
 		<div className={styles.eliteMemesControllers}>
-			{index === null ? (
-				<Button accent={Accent.SUCCESS} onClick={() => {
-					onMove(0);
-				}}>
+			{index == null ? (
+				<Button
+					accent={Accent.SUCCESS}
+					onClick={() => {
+						onMove(0);
+					}}
+				>
 					Start
 				</Button>
 			) : (

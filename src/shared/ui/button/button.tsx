@@ -47,6 +47,7 @@ const Button: FC<Props> = ({
 
 	return (
 		<button
+			type="button"
 			className={className}
 			disabled={isDisabled}
 			onClick={handleClick}

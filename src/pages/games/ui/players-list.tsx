@@ -1,8 +1,9 @@
 import Button, {Accent} from '@shared/ui/button';
 
+import deleteIcon from './icon-delete.svg';
+
 import styles from '../games.module.scss';
 
-import deleteIcon from './icon-delete.svg';
 
 import type {FC} from 'react';
 
@@ -31,7 +32,7 @@ export const PlayersList: FC<Props> = ({players, removePlayer}) => {
 							customClassNames={styles.gamesPlayerRemoveButton}
 							onClick={onRemoveButtonClick}
 						>
-							<img src={deleteIcon} />
+							<img src={deleteIcon}/>
 						</Button>
 					</li>
 				);
