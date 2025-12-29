@@ -2,11 +2,11 @@ import {NavLink} from 'react-router-dom';
 import clsx from 'clsx';
 
 import {Flex, Box} from '@chakra-ui/react';
+import {AuthDialog} from '@features/auth';
 import homePage from '@pages/home';
 import gamesPage from '@pages/games';
 import eliteMemesPage from '@pages/elite-memes';
 import eliteVideosPage from '@pages/elite-videos';
-import authPage from '@pages/auth';
 
 import styles from './header.module.scss';
 
@@ -60,12 +60,7 @@ export const Header: FC = () => {
 				</Box>
 
 				<Box marginLeft="auto">
-					<NavLink
-						to={authPage.path}
-						className={getNavLinkStyles}
-					>
-						{authPage.name}
-					</NavLink>
+					<AuthDialog/>
 				</Box>
 			</header>
 		</Flex>
