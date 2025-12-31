@@ -1,4 +1,3 @@
-import {BASE_URL} from '../client';
 import {createApiEffect} from '../create-api-effect';
 
 import {RateVideoResponseSchema, VideoListResponseSchema} from './schemas';
@@ -38,6 +37,26 @@ export const getVideosListByRangeFx = createApiEffect(
 	},
 );
 
+export const getVideo: ApiCall<string, {fileId: string}> = async (
+	apiClient,
+	params,
+	options,
+) => {
+	const {fileId} = params;
+
+	const response = await apiClient.get(`v1/videos/${fileId}`, options);
+
+	const blob = await response.blob();
+
+	return URL.createObjectURL(blob);
+};
+
+export const getVideoFx = createApiEffect(
+	async (client, {meta, options}: ApiCallFxParams<{fileId: string}>) => {
+		return await getVideo(client, meta, options);
+	},
+);
+
 export const rateVideo: ApiCall<RateVideoResponse, {fileId: string}> = async (
 	apiClient,
 	params,
@@ -64,7 +83,3 @@ export const rateVideoFx = createApiEffect(
 		});
 	},
 );
-
-export const getRandomVideoUrl = (fileId: string): string => {
-	return `${BASE_URL}v1/videos/${fileId}`;
-};

@@ -1,5 +1,6 @@
 export {
-	getRandomVideoUrl,
+	getVideo,
+	getVideoFx,
 	getVideosListByRangeFx,
 	getVideosListByRange,
 	rateVideo,

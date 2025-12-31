@@ -26,6 +26,7 @@
 		"allowUnusedLabels": false,
 		"noImplicitOverride": true,
 		"noPropertyAccessFromIndexSignature": false,
+		"noUncheckedIndexedAccess": true,
 		"exactOptionalPropertyTypes": false,
 		"strictBindCallApply": true,
 		"strictFunctionTypes": false,
