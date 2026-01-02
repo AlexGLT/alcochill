@@ -1,6 +1,7 @@
 import {
 	attach,
 	combine,
+	createEffect,
 	createEvent,
 	createStore,
 	sample,
@@ -86,6 +87,15 @@ const $videosList = createStore<{ref: Array<VideoItem> | null}>({ref: null})
 		});
 
 		return {ref: videosList};
+	})
+	.on(Gate.close, ({ref: videosList}) => {
+		videosList?.forEach(({src}) => {
+			if (src) {
+				URL.revokeObjectURL(src);
+			}
+		});
+
+		return {ref: null};
 	});
 
 const $videosCount = $videosList.map(({ref: videosList}) => (videosList || []).length);
@@ -157,6 +167,11 @@ sample({
 	target: $activeIndex,
 });
 
+
+const abortControllerCreated = createEvent<AbortController>();
+const $abortController = createStore<AbortController | null>(null)
+	.on(abortControllerCreated, (_, controller) => controller);
+
 const loadVideoFx = attach({
 	source: $videosList,
 	effect: async ({ref: videosList}, targetVideoIndex: number) => {
@@ -179,22 +194,37 @@ const loadVideoFx = attach({
 			return;
 		}
 
+		const abortController = new AbortController();
+		abortControllerCreated(abortController);
+
 		return await getVideoFx({
 			meta: {fileId},
+			options: {signal: abortController.signal},
 			// options: {onDownloadProgress: console.log},
 		});
 	},
 });
 
 sample({
+	clock: Gate.status,
+	source: $abortController,
+	filter: (_, isGateOpened) => !isGateOpened,
+	target: createEffect((abortController: AbortController | null) => abortController?.abort()),
+});
+
+sample({
 	clock: loadVideoFx.done,
-	fn: ({params, result}) => ({index: params, src: result}),
+	source: {isGateOpened: Gate.status},
+	filter: ({isGateOpened}) => isGateOpened,
+	fn: (_, {params, result}) => ({index: params, src: result}),
 	target: videoItemSourceLoaded,
 });
 
 sample({
 	clock: loadVideoFx.fail,
-	fn: ({params}) => ({index: params}),
+	source: {isGateOpened: Gate.status},
+	filter: ({isGateOpened}) => isGateOpened,
+	fn: (_, {params}) => ({index: params}),
 	target: videoItemRemoved,
 });
 
