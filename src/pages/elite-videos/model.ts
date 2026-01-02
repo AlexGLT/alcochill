@@ -88,12 +88,28 @@ const $videosList = createStore<{ref: Array<VideoItem> | null}>({ref: null})
 		return {ref: videosList};
 	});
 
+const $videosCount = $videosList.map(({ref: videosList}) => (videosList || []).length);
 const $preloadedVideosCount = $videosList.map(({ref: videosList}) => (videosList || []).findIndex(({src}) => !src));
 
 const movedForward = createEvent();
 const movedBackward = createEvent();
 
 const $activeIndex = createStore<number>(0);
+
+sample({
+	clock: videoItemRemoved,
+	source: {
+		index: $activeIndex,
+		videosCount: $videosCount,
+	},
+	filter: ({index, videosCount}) => {
+		return videosCount > 0
+			? index >= videosCount
+			: false;
+	},
+	fn: ({videosCount}) => videosCount - 1,
+	target: $activeIndex,
+});
 
 sample({
 	clock: movedForward,
@@ -149,38 +165,24 @@ const loadVideoFx = attach({
 			return;
 		}
 
-		for (let shift = 0; shift + targetVideoIndex < videosList.length; shift++) {
-			const fallbackIndex = targetVideoIndex + shift;
+		const targetVideoItem = videosList[targetVideoIndex];
 
-			const targetVideoItem = videosList[fallbackIndex];
-
-			if (!targetVideoItem) {
-				console.error(`No video at index ${fallbackIndex} to load!`);
-				continue;
-			}
-
-			if (targetVideoItem.src) {
-				console.error(`Video at index ${fallbackIndex} already has a source loaded!`);
-				continue;
-			}
-
-			const {fileId} = targetVideoItem;
-
-			try {
-				const videoUrl = await getVideoFx({
-					meta: {fileId},
-					// options: {onDownloadProgress: console.log},
-				});
-
-				return videoUrl;
-			} catch (error) {
-				console.error('Error loading video', error);
-				videoItemRemoved({index: fallbackIndex});
-			}
+		if (!targetVideoItem) {
+			console.error(`No video at index ${targetVideoIndex} to load!`);
+			return;
 		}
 
-		console.error('No valid video found to load source for!');
-		return undefined;
+		const {fileId, src} = targetVideoItem;
+
+		if (src) {
+			console.error(`Video at index ${targetVideoIndex} already has a source loaded!`);
+			return;
+		}
+
+		return await getVideoFx({
+			meta: {fileId},
+			// options: {onDownloadProgress: console.log},
+		});
 	},
 });
 
@@ -191,8 +193,15 @@ sample({
 });
 
 sample({
+	clock: loadVideoFx.fail,
+	fn: ({params}) => ({index: params}),
+	target: videoItemRemoved,
+});
+
+sample({
 	clock: [
 		$activeIndex,
+		$videosCount,
 		$preloadedVideosCount,
 		movedForward,
 		movedBackward,
@@ -200,8 +209,11 @@ sample({
 	source: {
 		index: $activeIndex,
 		preloadedVideosCount: $preloadedVideosCount,
+		videosCount: $videosCount,
 	},
-	filter: ({index, preloadedVideosCount}) => preloadedVideosCount <= index + 3,
+	filter: ({index, videosCount, preloadedVideosCount}) => {
+		return !!videosCount && preloadedVideosCount <= index + 3 && videosCount !== preloadedVideosCount;
+	},
 	fn: ({preloadedVideosCount}) => preloadedVideosCount,
 	target: loadVideoFx,
 });
