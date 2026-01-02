@@ -10,7 +10,7 @@ import {
 import {shuffle} from 'es-toolkit';
 import {createGate} from 'effector-react';
 
-import {getVideoFx} from '@shared/api/random-videos';
+import {getVideoFx, rateVideoFx} from '@shared/api/random-videos';
 
 import type {Video} from '@shared/api/random-videos';
 import type {VideoItem} from './types';
@@ -97,6 +97,30 @@ const $videosList = createStore<{ref: Array<VideoItem> | null}>({ref: null})
 
 		return {ref: null};
 	});
+
+sample({
+	clock: videoRatingUpdated,
+	source: {videos: $videosList},
+	filter: ({videos: {ref: videosList}}, {index, rating}) => {
+		const targetVideoItem = videosList?.[index];
+
+		if (!targetVideoItem) {
+			console.error(
+				`No video at the specified index to update! Index: ${index}, Length: ${videosList?.length || 0}`,
+			);
+
+			return false;
+		}
+
+		return targetVideoItem.rating === rating;
+	},
+	fn: ({videos: {ref: videosList}}, {index, rating}) => {
+		const {fileId} = videosList![index]!;
+
+		return {meta: {fileId, rating}};
+	},
+	target: rateVideoFx,
+});
 
 const $videosCount = $videosList.map(({ref: videosList}) => (videosList || []).length);
 const $preloadedVideosCount = $videosList.map(({ref: videosList}) => (videosList || []).findIndex(({src}) => !src));
@@ -263,5 +287,6 @@ export const model = {
 	$activeIndex,
 	movedForward,
 	movedBackward,
+	videoRatingUpdated,
 	videosListFetched,
 };

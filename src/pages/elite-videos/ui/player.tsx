@@ -1,11 +1,10 @@
-import {useCallback, useRef} from 'react';
+import {useCallback, useLayoutEffect, useRef} from 'react';
 import {FaChevronUp, FaChevronDown} from 'react-icons/fa6';
 import clsx from 'clsx';
 import {useGate, useUnit} from 'effector-react';
 
 import {useStableCallback} from '@shared/libs';
-// import {rateVideoFx} from '@shared/api/random-videos';
-// import {Rating} from '@shared/ui/rating';
+import {Rating} from '@shared/ui/rating';
 
 import {model} from '../model';
 
@@ -21,14 +20,14 @@ export const Player: FC = () => {
 		activeIndex,
 		moveForward,
 		moveBackward,
-		// rateVideo,
+		updateVideoRating,
 	} = useUnit({
 		videosListRef: model.$videosList,
 		displayedVideos: model.$displayedVideos,
 		activeIndex: model.$activeIndex,
 		moveForward: model.movedForward,
 		moveBackward: model.movedBackward,
-		// rateVideo: rateVideoFx,
+		updateVideoRating: model.videoRatingUpdated,
 	});
 
 	const videosList = videosListRef.ref || [];
@@ -91,59 +90,42 @@ export const Player: FC = () => {
 		}
 	});
 
-	// const rateTheVideo = useStableCallback((rating: number): void => {
-	// 	const fileId = currentVideo?.fileId;
+	const rateVideo = useStableCallback((rating: number): void => {
+		updateVideoRating({index: activeIndex, rating});
+	});
 
-	// 	if (fileId) {
-	// 		updateVideos((previousVideos) => {
-	// 			return previousVideos.map((video) => {
-	// 				if (video.fileId === currentVideo.fileId) {
-	// 					return {
-	// 						...video,
-	// 						rating,
-	// 					};
-	// 				}
+	useLayoutEffect(() => {
+		const onKeyDown = (event: KeyboardEvent): void => {
+			if (event.key === 'ArrowDown') {
+				openNextVideo();
+			} else if (event.key === 'ArrowUp') {
+				openPreviousVideo();
+			} else if (event.key === ' ') {
+				togglePlay();
+			} else if (event.key === '1') {
+				rateVideo(1);
+			} else if (event.key === '2') {
+				rateVideo(2);
+			} else if (event.key === '3') {
+				rateVideo(3);
+			} else if (event.key === '4') {
+				rateVideo(4);
+			} else if (event.key === '5') {
+				rateVideo(5);
+			}
+		};
 
-	// 				return video;
-	// 			});
-	// 		});
+		window.addEventListener('keydown', onKeyDown);
 
-	// 		rateVideo({meta: {fileId, rating}});
-	// 	}
-	// });
-
-	// useLayoutEffect(() => {
-	// 	const onKeyDown = (event: KeyboardEvent): void => {
-	// 		if (event.key === 'ArrowDown') {
-	// 			openNextVideo();
-	// 		} else if (event.key === 'ArrowUp') {
-	// 			openPreviousVideo();
-	// 		} else if (event.key === ' ') {
-	// 			togglePlay();
-	// 		} else if (event.key === '1') {
-	// 			rateTheVideo(1);
-	// 		} else if (event.key === '2') {
-	// 			rateTheVideo(2);
-	// 		} else if (event.key === '3') {
-	// 			rateTheVideo(3);
-	// 		} else if (event.key === '4') {
-	// 			rateTheVideo(4);
-	// 		} else if (event.key === '5') {
-	// 			rateTheVideo(5);
-	// 		}
-	// 	};
-
-	// 	window.addEventListener('keydown', onKeyDown);
-
-	// 	return () => {
-	// 		window.removeEventListener('keydown', onKeyDown);
-	// 	};
-	// }, [
-	// 	openNextVideo,
-	// 	openPreviousVideo,
-	// 	togglePlay,
-	// 	rateTheVideo,
-	// ]);
+		return () => {
+			window.removeEventListener('keydown', onKeyDown);
+		};
+	}, [
+		openNextVideo,
+		openPreviousVideo,
+		togglePlay,
+		rateVideo,
+	]);
 
 	return (
 		<div
@@ -162,15 +144,15 @@ export const Player: FC = () => {
 				</div>
 			) : null}
 
-			{/* {currentVideo ? (
+			{currentVideo ? (
 				<div className={styles.rating}>
 					<Rating
 						id={currentVideo.fileId}
 						value={currentVideo.rating}
-						onChange={rateTheVideo}
+						onChange={rateVideo}
 					/>
 				</div>
-			) : null} */}
+			) : null}
 
 			{previousVideo ? (
 				<video
