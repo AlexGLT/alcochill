@@ -368,7 +368,7 @@ sample({
 
 export const model = {
 	Gate,
-	$videosListRef,
+	$videosCount,
 	$displayedVideos,
 	$activeIndex,
 	movedForward,

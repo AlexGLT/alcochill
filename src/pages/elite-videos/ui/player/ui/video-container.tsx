@@ -4,10 +4,10 @@ import {useLayoutEffect, useRef} from 'react';
 import {Rating} from '@shared/ui/rating';
 import {useStableCallback} from '@shared/libs';
 
-import styles from './styles.module.scss';
+import styles from '../styles.module.scss';
 
 import type {FC} from 'react';
-import type {VideoItem} from '../../types';
+import type {VideoItem} from '../../../types';
 
 
 type Props = {
@@ -94,21 +94,6 @@ export const VideoContainer: FC<Props> = ({
 			onTransitionStart={handleTransitionStart}
 			onTransitionEnd={handleTransitionEnd}
 		>
-			<video
-				ref={videoRef}
-				src={src}
-				width="100%"
-				height="100%"
-				autoPlay={isActive}
-				loop={true}
-				controls={true}
-				disablePictureInPicture={true}
-				disableRemotePlayback={true}
-				controlsList="nofullscreen noremoteplayback"
-				className={styles.video}
-				onClick={isActive ? handlePlayToggle : undefined}
-			/>
-
 			<div className={styles.sender}>
 				{from}
 			</div>
@@ -124,6 +109,21 @@ export const VideoContainer: FC<Props> = ({
 					onChange={onVideoRatingUpdate}
 				/>
 			</div>
+
+			<video
+				ref={videoRef}
+				src={src}
+				width="100%"
+				height="100%"
+				autoPlay={isActive}
+				loop={true}
+				controls={true}
+				disablePictureInPicture={true}
+				disableRemotePlayback={true}
+				controlsList="nofullscreen noremoteplayback"
+				className={styles.video}
+				onClick={isActive ? handlePlayToggle : undefined}
+			/>
 		</div>
 	);
 };
