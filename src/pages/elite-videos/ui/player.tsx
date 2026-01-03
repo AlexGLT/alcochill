@@ -15,22 +15,20 @@ import type {FC} from 'react';
 
 export const Player: FC = () => {
 	const {
-		videosListRef,
+		videosListRef: {current: videosList},
 		displayedVideos: [previousVideo, currentVideo, nextVideo],
 		activeIndex,
 		moveForward,
 		moveBackward,
 		updateVideoRating,
 	} = useUnit({
-		videosListRef: model.$videosList,
+		videosListRef: model.$videosListRef,
 		displayedVideos: model.$displayedVideos,
 		activeIndex: model.$activeIndex,
 		moveForward: model.movedForward,
 		moveBackward: model.movedBackward,
 		updateVideoRating: model.videoRatingUpdated,
 	});
-
-	const videosList = videosListRef.ref || [];
 
 	useGate(model.Gate);
 

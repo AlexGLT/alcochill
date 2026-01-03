@@ -1,7 +1,5 @@
 import {
-	attach,
 	combine,
-	createEffect,
 	createEvent,
 	createStore,
 	sample,
@@ -11,7 +9,11 @@ import {shuffle} from 'es-toolkit';
 import {createGate} from 'effector-react';
 
 import {getVideoFx, rateVideoFx} from '@shared/api/random-videos';
+import {createEffectWithAbort} from '@shared/api';
+import {isAbortError} from '@shared/errors';
 
+import type {StoreRef} from '@shared/core/effector';
+import type {ParamsWithSignal} from '@shared/api';
 import type {Video} from '@shared/api/random-videos';
 import type {VideoItem} from './types';
 
@@ -20,93 +22,94 @@ const Gate = createGate();
 
 const videosListFetched = createEvent<Array<Video>>();
 
-const $rawVideosList = createStore<Array<Video> | null>(null)
-	.on(videosListFetched, (_, videos) => shuffle(videos));
+const $rawVideosList = createStore<Array<Video> | null>(null).on(videosListFetched, (_, videos) => shuffle(videos));
 
-const videoItemRemoved = createEvent<{index: number}>();
-const videoItemSourceLoaded = createEvent<{index: number, src: string | undefined}>();
+const videoRemoved = createEvent<{index: number}>();
+const videoSourceLoaded = createEvent<{index: number, src: string | undefined}>();
 const videoRatingUpdated = createEvent<{index: number, rating: number}>();
 
-const $videosList = createStore<{ref: Array<VideoItem> | null}>({ref: null})
-	.on($rawVideosList.updates, (_, videos) => ({ref: videos}))
-	.on(videoItemRemoved, (state, {index}) => {
-		if (!state.ref) {
+const $videosListRef = createStore<StoreRef<Array<VideoItem>>>({current: []})
+	.on($rawVideosList.updates, (_, videos) => ({current: videos || []}))
+	.on(videoRemoved, (state, {index}) => {
+		const videosList = state.current;
+
+		if (!videosList.length) {
 			console.error('No videos to remove from!');
 			return state;
 		}
 
-		if (!state.ref[index]) {
-			console.error(`No video at the specified index to remove! Index: ${index}, Length: ${state.ref.length}`);
+		if (!videosList[index]) {
+			console.error(`No video at the specified index to remove! Index: ${index}, Length: ${videosList.length}`);
 			return state;
 		}
 
+		videosList.splice(index, 1);
 
-		const videosList = state.ref;
-		state.ref.splice(index, 1);
-
-		return {ref: videosList};
+		return {current: videosList};
 	})
-	.on(videoItemSourceLoaded, (state, {index, src}) => {
-		if (!state.ref) {
+	.on(videoSourceLoaded, (state, {index, src}) => {
+		const videosList = state.current;
+
+		if (!videosList.length) {
 			console.error('No videos to load source into!');
 			return state;
 		}
 
-		const targetVideoItem = state.ref[index];
+		const targetVideoItem = videosList[index];
 
 		if (!targetVideoItem) {
-			console.error(`No video at the specified index to update! Index: ${index}, Length: ${state.ref.length}`);
+			console.error(`No video at the specified index to update! Index: ${index}, Length: ${videosList.length}`);
 			return state;
 		}
 
-		const videosList = state.ref;
 		videosList.splice(index, 1, {
 			...targetVideoItem,
 			src,
 		});
 
-		return {ref: videosList};
+		return {current: videosList};
 	})
 	.on(videoRatingUpdated, (state, {index, rating}) => {
-		if (!state.ref) {
+		const videosList = state.current;
+
+		if (!videosList.length) {
 			console.error('No videos to update rating for!');
 			return state;
 		}
 
-		const targetItem = state.ref[index];
+		const targetItem = videosList[index];
 
 		if (!targetItem) {
-			console.error(`No video at the specified index to update! Index: ${index}, Length: ${state.ref.length}`);
+			console.error(`No video at the specified index to update! Index: ${index}, Length: ${videosList.length}`);
 			return state;
 		}
 
-		const videosList = state.ref;
 		videosList.splice(index, 1, {
 			...targetItem,
 			rating,
 		});
 
-		return {ref: videosList};
+		return {current: videosList};
 	})
-	.on(Gate.close, ({ref: videosList}) => {
-		videosList?.forEach(({src}) => {
+	.on(Gate.close, ({current: videosList}) => {
+		videosList.forEach(({src}) => {
 			if (src) {
 				URL.revokeObjectURL(src);
 			}
 		});
 
-		return {ref: null};
+		return {current: []};
 	});
 
 sample({
 	clock: videoRatingUpdated,
-	source: {videos: $videosList},
-	filter: ({videos: {ref: videosList}}, {index, rating}) => {
-		const targetVideoItem = videosList?.[index];
+	source: $videosListRef,
+	filter: ({current: videosList}, {index, rating}) => {
+		const targetVideoItem = videosList[index];
 
 		if (!targetVideoItem) {
 			console.error(
-				`No video at the specified index to update! Index: ${index}, Length: ${videosList?.length || 0}`,
+				`No video at the specified index to update! Index: ${index}, Length: ${videosList.length}`,
 			);
 
 			return false;
@@ -114,51 +117,49 @@ sample({
 
 		return targetVideoItem.rating === rating;
 	},
-	fn: ({videos: {ref: videosList}}, {index, rating}) => {
-		const {fileId} = videosList![index]!;
+	fn: ({current: videosList}, {index, rating}) => {
+		const {fileId} = videosList[index]!;
 
 		return {meta: {fileId, rating}};
 	},
 	target: rateVideoFx,
 });
 
-const $videosCount = $videosList.map(({ref: videosList}) => (videosList || []).length);
-const $preloadedVideosCount = $videosList.map(({ref: videosList}) => (videosList || []).findIndex(({src}) => !src));
+const $videosCount = $videosListRef.map(({current: videosList}) => videosList.length);
+const $preloadedVideosCount = $videosListRef.map(({current: videosList}) => videosList.findIndex(({src}) => !src));
 
 const movedForward = createEvent();
 const movedBackward = createEvent();
 
 const $activeIndex = createStore<number>(0);
 
-sample({
-	clock: videoItemRemoved,
-	source: {
-		index: $activeIndex,
-		videosCount: $videosCount,
-	},
-	filter: ({index, videosCount}) => {
-		return videosCount > 0
-			? index >= videosCount
-			: false;
-	},
-	fn: ({videosCount}) => videosCount - 1,
-	target: $activeIndex,
+const $displayedVideos = combine($videosListRef, $activeIndex, ({current: videosList}, index) => {
+	return [
+		videosList[index - 1],
+		videosList[index],
+		videosList[index + 1],
+	] as const;
 });
 
 sample({
 	clock: movedForward,
 	source: {
+		videosListRef: $videosListRef,
 		index: $activeIndex,
-		videosList: $videosList,
 	},
-	filter: ({index, videosList: {ref: videosList}}) => {
-		if (!videosList) {
+	filter: ({videosListRef: {current: videosList}, index}) => {
+		if (!videosList.length) {
 			console.error('No videos available!');
 			return false;
 		}
 
 		if (index >= videosList.length - 1) {
 			console.error('Already at the last video!');
+			return false;
+		}
+
+		if (!videosList[index]?.src) {
+			console.error('Wait until source is loaded at least for current video!');
 			return false;
 		}
 
@@ -171,11 +172,11 @@ sample({
 sample({
 	clock: movedBackward,
 	source: {
+		videoListRef: $videosListRef,
 		index: $activeIndex,
-		videosList: $videosList,
 	},
-	filter: ({index, videosList: {ref: videosList}}) => {
-		if (!videosList) {
+	filter: ({videoListRef: {current: videosList}, index}) => {
+		if (!videosList.length) {
 			console.error('No videos available!');
 			return false;
 		}
@@ -191,65 +192,72 @@ sample({
 	target: $activeIndex,
 });
 
-
-const abortControllerCreated = createEvent<AbortController>();
-const $abortController = createStore<AbortController | null>(null)
-	.on(abortControllerCreated, (_, controller) => controller);
-
-const loadVideoFx = attach({
-	source: $videosList,
-	effect: async ({ref: videosList}, targetVideoIndex: number) => {
-		if (!videosList || videosList.length <= targetVideoIndex) {
-			console.error('Index out of bounds!');
-			return;
-		}
-
-		const targetVideoItem = videosList[targetVideoIndex];
-
-		if (!targetVideoItem) {
-			console.error(`No video at index ${targetVideoIndex} to load!`);
-			return;
-		}
-
-		const {fileId, src} = targetVideoItem;
-
-		if (src) {
-			console.error(`Video at index ${targetVideoIndex} already has a source loaded!`);
-			return;
-		}
-
-		const abortController = new AbortController();
-		abortControllerCreated(abortController);
-
-		return await getVideoFx({
-			meta: {fileId},
-			options: {signal: abortController.signal},
-			// options: {onDownloadProgress: console.log},
-		});
-	},
-});
-
+// WHY: cover edge-case, when user was moved to the last video, but the source for this video cannot be loaded
 sample({
-	clock: Gate.status,
-	source: $abortController,
-	filter: (_, isGateOpened) => !isGateOpened,
-	target: createEffect((abortController: AbortController | null) => abortController?.abort()),
+	clock: videoRemoved,
+	source: {
+		index: $activeIndex,
+		videosCount: $videosCount,
+	},
+	filter: ({index, videosCount}) => {
+		return videosCount > 0
+			? index >= videosCount
+			: false;
+	},
+	fn: ({videosCount}) => videosCount - 1,
+	target: $activeIndex,
 });
+
+const loadVideoFx = createEffectWithAbort(async (params: ParamsWithSignal<{
+	videosListRef: StoreRef<Array<VideoItem>>,
+	index: number,
+}>) => {
+	const {
+		videosListRef: {current: videosList},
+		index,
+		signal,
+	} = params;
+
+	if (videosList.length <= index) {
+		console.error('Index out of bounds!');
+		return;
+	}
+
+	const targetVideoItem = videosList[index];
+
+	if (!targetVideoItem) {
+		console.error(`No video at index ${index} to load!`);
+		return;
+	}
+
+	const {fileId, src} = targetVideoItem;
+
+	if (src) {
+		console.error(`Video at index ${index} already has a source loaded!`);
+		return;
+	}
+
+	return await getVideoFx({
+		meta: {fileId},
+		options: {signal},
+		// options: {onDownloadProgress: console.log},
+	});
+}, {gate: Gate});
 
 sample({
 	clock: loadVideoFx.done,
 	source: {isGateOpened: Gate.status},
 	filter: ({isGateOpened}) => isGateOpened,
-	fn: (_, {params, result}) => ({index: params, src: result}),
-	target: videoItemSourceLoaded,
+	fn: (_, {params: {index}, result}) => ({index, src: result}),
+	target: videoSourceLoaded,
 });
 
 sample({
 	clock: loadVideoFx.fail,
 	source: {isGateOpened: Gate.status},
-	filter: ({isGateOpened}) => isGateOpened,
-	fn: (_, {params}) => ({index: params}),
-	target: videoItemRemoved,
+	filter: ({isGateOpened}, {error}) => isGateOpened && !isAbortError(error),
+	fn: (_, {params: {index}}) => ({index}),
+	target: videoRemoved,
 });
 
 sample({
@@ -261,28 +269,32 @@ sample({
 		movedBackward,
 	],
 	source: {
-		index: $activeIndex,
-		preloadedVideosCount: $preloadedVideosCount,
+		videosListRef: $videosListRef,
 		videosCount: $videosCount,
+		preloadedVideosCount: $preloadedVideosCount,
+		index: $activeIndex,
+		isAlreadyPending: loadVideoFx.pending,
 	},
-	filter: ({index, videosCount, preloadedVideosCount}) => {
-		return !!videosCount && preloadedVideosCount <= index + 3 && videosCount !== preloadedVideosCount;
+	filter: ({
+		index,
+		videosCount,
+		preloadedVideosCount,
+		isAlreadyPending,
+	}) => {
+		return (
+			!isAlreadyPending &&
+			preloadedVideosCount <= index + 3 &&
+			!!videosCount &&
+			videosCount !== preloadedVideosCount
+		);
 	},
-	fn: ({preloadedVideosCount}) => preloadedVideosCount,
+	fn: ({preloadedVideosCount: index, videosListRef}) => ({index, videosListRef}),
 	target: loadVideoFx,
-});
-
-const $displayedVideos = combine($videosList, $activeIndex, ({ref: videosList}, index) => {
-	return [
-		videosList?.[index - 1],
-		videosList?.[index],
-		videosList?.[index + 1],
-	] as const;
 });
 
 export const model = {
 	Gate,
-	$videosList,
+	$videosListRef,
 	$displayedVideos,
 	$activeIndex,
 	movedForward,

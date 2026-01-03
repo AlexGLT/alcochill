@@ -17,3 +17,7 @@ export type ApiCall<
 export type ApiCallFxParams<T extends Record<string, unknown> | void = void> = T extends void
 	? ({options?: Options} | void)
 	: {meta: T, options?: Options};
+
+export type ParamsWithSignal<Params extends Record<string, unknown> | void = Record<string, unknown>> = Params & {
+	signal: AbortSignal,
+};
