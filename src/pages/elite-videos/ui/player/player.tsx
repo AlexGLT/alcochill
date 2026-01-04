@@ -33,7 +33,7 @@ export const Player: FC = () => {
 			{previousVideo ? (
 				<VideoContainer
 					key={previousVideo.fileId}
-					className={styles.videoContainerPrevious}
+					className={styles.videoContainerPrevious!}
 					videoItem={previousVideo}
 				/>
 			) : null}
@@ -42,7 +42,7 @@ export const Player: FC = () => {
 				<VideoContainer
 					key={currentVideo.fileId}
 					isActive={true}
-					className={styles.videoContainerCurrent}
+					className={styles.videoContainerCurrent!}
 					videoItem={currentVideo}
 					loadingProgress={loadingProgress}
 					onTransitionStart={onAnimationStart}
@@ -54,7 +54,7 @@ export const Player: FC = () => {
 			{nextVideo ? (
 				<VideoContainer
 					key={nextVideo.fileId}
-					className={styles.videoContainerNext}
+					className={styles.videoContainerNext!}
 					videoItem={nextVideo}
 				/>
 			) : null}

@@ -64,7 +64,7 @@ const TextField: FC<Props> = ({
 
 			<div
 				className={clsx(styles.textFieldInputContainer, {
-					[styles.textFieldInputContainerInvalid]: isInvalid,
+					[styles.textFieldInputContainerInvalid!]: isInvalid,
 				})}
 			>
 				<input
@@ -83,7 +83,7 @@ const TextField: FC<Props> = ({
 			{helperMessage ? (
 				<small
 					className={clsx(styles.textFieldMessage, {
-						[styles.textFieldMessageInvalid]: isInvalid,
+						[styles.textFieldMessageInvalid!]: isInvalid,
 					})}
 				>
 					{helperMessage}

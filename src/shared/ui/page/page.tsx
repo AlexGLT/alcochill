@@ -16,8 +16,8 @@ const PageLayout: FC<Props> = ({
 	children,
 }) => {
 	const classNames = clsx(styles.page, {
-		[styles.pageSingle]: isSinglePage,
-		[styles.pageCentralizer]: hasCenteredContent,
+		[styles.pageSingle!]: isSinglePage,
+		[styles.pageCentralizer!]: hasCenteredContent,
 	});
 
 	return (

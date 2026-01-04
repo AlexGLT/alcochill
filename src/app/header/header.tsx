@@ -16,7 +16,7 @@ import type {FC} from 'react';
 export const Header: FC = () => {
 	const getNavLinkStyles = ({isActive}: {isActive: boolean}): string => (
 		clsx(styles.headerLink, {
-			[styles.headerLinkActive]: isActive,
+			[styles.headerLinkActive!]: isActive,
 		})
 	);
 

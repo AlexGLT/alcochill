@@ -29,11 +29,11 @@ const Popover: FC<Props> = ({
 	const elementRef = useRef<HTMLDivElement>(null);
 
 	const handleEnter = (): void => {
-		elementRef.current?.classList.add(styles.popoverOpen);
+		elementRef.current?.classList.add(styles.popoverOpen!);
 	};
 
 	const handleExited = (): void => {
-		elementRef.current?.classList.remove(styles.popoverOpen);
+		elementRef.current?.classList.remove(styles.popoverOpen!);
 	};
 
 	const popoverClassNames = clsx(styles.popover, customClassNames);

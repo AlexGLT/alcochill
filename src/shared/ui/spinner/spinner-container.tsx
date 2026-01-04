@@ -25,7 +25,7 @@ export const SpinnerContainer: FC<Props> = ({
 	}, [isLoading, children]);
 
 	const className = clsx(styles.spinnerContainer, customClassNames, {
-		[styles.spinnerContainerLoading]: isLoading,
+		[styles.spinnerContainerLoading!]: isLoading,
 	});
 
 	return (

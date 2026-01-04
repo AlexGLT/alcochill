@@ -12,11 +12,11 @@ import type {
 
 
 const ACCENT_MIX: Record<Accent, string> = {
-	[Accent.DEFAULT]: styles.buttonDefault,
-	[Accent.PRIMARY]: styles.buttonPrimary,
-	[Accent.SUCCESS]: styles.buttonSuccess,
-	[Accent.DANGER]: styles.buttonDanger,
-	[Accent.WARNING]: styles.buttonWarning,
+	[Accent.DEFAULT]: styles.buttonDefault!,
+	[Accent.PRIMARY]: styles.buttonPrimary!,
+	[Accent.SUCCESS]: styles.buttonSuccess!,
+	[Accent.DANGER]: styles.buttonDanger!,
+	[Accent.WARNING]: styles.buttonWarning!,
 };
 
 type Props = PropsWithChildren<{
@@ -38,7 +38,7 @@ const Button: FC<Props> = ({
 	children,
 }) => {
 	const className = clsx(styles.button, customClassNames, ACCENT_MIX[accent], {
-		[styles.buttonSelected]: isSelected,
+		[styles.buttonSelected!]: isSelected,
 	});
 
 	const handleClick = !isDisabled && !isLoading

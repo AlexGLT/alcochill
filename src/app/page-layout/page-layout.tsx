@@ -24,7 +24,7 @@ export const PageLayout: FC<Props> = ({
 	const canTimerPopoverBeDisplayed = currentPath !== '/';
 
 	const classNames = clsx(styles.pageLayout, {
-		[styles.pageLayoutSingle]: isSinglePage,
+		[styles.pageLayoutSingle!]: isSinglePage,
 	});
 
 	return (
