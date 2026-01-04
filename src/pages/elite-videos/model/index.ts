@@ -21,7 +21,7 @@ import {
 	activeVideoRatingUpdated,
 } from './video-rating';
 
-import {loadVideoFx} from './video-loading';
+import {$activeVideoLoadingProgress} from './video-loading';
 
 
 export const model = {
@@ -29,6 +29,7 @@ export const model = {
 	$videosCount,
 	$preloadedVideosCount,
 	$displayedVideos,
+	$activeVideoLoadingProgress,
 	$activeIndex,
 	movedForward,
 	movedBackward,
@@ -36,5 +37,4 @@ export const model = {
 	scrollAnimationStarted,
 	scrollAnimationEnded,
 	videosListFetched,
-	loadVideoFx,
 };

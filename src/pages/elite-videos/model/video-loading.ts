@@ -1,10 +1,12 @@
-import {createEvent, createStore, sample} from 'effector';
+import {createStore, sample, scopeBind} from 'effector';
 
 import {createEffectWithAbort} from '@shared/api';
 import {getVideoFx} from '@shared/api/random-videos';
 import {isAbortError} from '@shared/errors';
+import {createThrottledEvent} from '@shared/core/effector';
+import {isNumber} from '@shared/libs';
 
-import {movedForward, movedBackward, $activeIndex} from './active-index';
+import {Gate} from './basic';
 
 import {
 	videoSourceLoaded,
@@ -14,18 +16,35 @@ import {
 	$preloadedVideosCount,
 } from './videos-list';
 
-import {Gate} from './basic';
+import {
+	$activeIndex,
+	movedForward,
+	movedBackward,
+} from './active-index';
 
-import type {ParamsWithSignal} from '@shared/api';
 import type {StoreRef} from '@shared/core/effector';
+import type {ParamsWithSignal} from '@shared/api';
 import type {VideoItem} from '../types';
 
 
-const activeVideoProgressUpdated = createEvent<number>();
+const [
+	videoLoadingProgressUpdated,
+	updateVideoLoadingProgressFx,
+] = createThrottledEvent<{index: number, progress: number | null}>([$activeIndex, Gate.close]);
 
-export const activeVideoProgress = createStore(0)
-	.on(activeVideoProgressUpdated, (_, progress) => progress)
-	.reset(Gate.close);
+export const $activeVideoLoadingProgress = createStore<number | null>(null).reset([$activeIndex, Gate.close]);
+
+sample({
+	clock: videoLoadingProgressUpdated,
+	source: $activeIndex,
+	filter: (activeIndex, {index}) => activeIndex === index,
+	fn: (_, {progress}) => {
+		return isNumber(progress) && progress !== 1
+			? progress * 100
+			: null;
+	},
+	target: $activeVideoLoadingProgress,
+});
 
 export const loadVideoFx = createEffectWithAbort(async (params: ParamsWithSignal<{
 	videosListRef: StoreRef<Array<VideoItem>>,
@@ -56,12 +75,23 @@ export const loadVideoFx = createEffectWithAbort(async (params: ParamsWithSignal
 		return;
 	}
 
+	const updateVideoLoadingProgress = scopeBind(updateVideoLoadingProgressFx);
+	updateVideoLoadingProgress({index, progress: 0});
+
 	return await getVideoFx({
 		meta: {fileId},
-		options: {signal},
-		// options: {onDownloadProgress: console.log},
+		options: {
+			signal,
+			onDownloadProgress: ({percent: progress}) => {updateVideoLoadingProgress({index, progress})},
+		},
 	});
 }, {gate: Gate});
+
+sample({
+	clock: loadVideoFx.finally,
+	fn: ({params: {index}}) => ({index, progress: null}),
+	target: videoLoadingProgressUpdated,
+});
 
 sample({
 	clock: loadVideoFx.done,
@@ -102,7 +132,7 @@ sample({
 	}) => {
 		return (
 			!isAlreadyPending &&
-			preloadedVideosCount <= index + 5 &&
+			preloadedVideosCount <= index + 3 &&
 			!!videosCount &&
 			videosCount !== preloadedVideosCount
 		);

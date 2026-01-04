@@ -78,6 +78,23 @@
 	padding: 12px;
 }
 
+.loading-progress {
+	position: absolute;
+	bottom: 50%;
+	left: 50%;
+
+	transform: translate(-50%, 50%);
+
+	z-index: 10;
+
+	width: 360px;
+
+	background-color: #373737;
+	border-radius: 8px;
+
+	padding: 12px;
+}
+
 .index-control-container {
 	position: fixed;
 	right: 1.5em;

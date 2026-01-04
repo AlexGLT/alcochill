@@ -15,7 +15,7 @@ import {videoRatingUpdated, $videosListRef} from './videos-list';
 
 export const activeVideoRatingUpdated = createEvent<number>();
 
-const {subscribeFx, unsubscribeFx} = createSubscribeEffect(() => {
+const [subscribeKeyboardFx, unsubscribeKeyboardFx] = createSubscribeEffect(() => {
 	const moveForward = scopeBind(movedForward);
 	const moveBackward = scopeBind(movedBackward);
 
@@ -48,12 +48,12 @@ const {subscribeFx, unsubscribeFx} = createSubscribeEffect(() => {
 
 sample({
 	clock: Gate.open,
-	target: subscribeFx,
+	target: subscribeKeyboardFx,
 });
 
 sample({
 	clock: Gate.close,
-	target: unsubscribeFx,
+	target: unsubscribeKeyboardFx,
 });
 
 export const updateActiveVideoRatingFx = attach({

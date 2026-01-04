@@ -5,10 +5,10 @@ import type {Effect} from 'effector';
 
 type Noop = () => void;
 
-type ReturnParams = {
+type ReturnParams = [
 	subscribeFx: Effect<void, Noop>,
 	unsubscribeFx: Effect<void, void>,
-};
+];
 
 export const createSubscribeEffect = (subscribe: () => Noop): ReturnParams => {
 	const $unsubscribe = createStore<Noop>(() => undefined, {serialize: 'ignore'});
@@ -32,8 +32,8 @@ export const createSubscribeEffect = (subscribe: () => Noop): ReturnParams => {
 		target: $unsubscribe,
 	});
 
-	return {
+	return [
 		subscribeFx,
 		unsubscribeFx,
-	};
+	];
 };

@@ -7,7 +7,7 @@ export const reactRules = {
 	// https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/boolean-prop-naming.md
 	'react/boolean-prop-naming': [SEVERITY.ERROR, {
 		propTypeNames: ['bool'],
-		rule: "^(is|are|has|should|was|were|can)[A-Z]([A-Za-z0-9]?)+",
+		rule: "^(am|is|are|has|should|was|were|can|show|hide)[A-Z]([A-Za-z0-9]?)+",
 	}],
 
 	// https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/button-has-type.md

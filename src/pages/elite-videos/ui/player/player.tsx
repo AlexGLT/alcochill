@@ -10,19 +10,21 @@ import type {FC} from 'react';
 
 
 export const Player: FC = () => {
+	useGate(model.Gate);
+
 	const {
 		displayedVideos: [previousVideo, currentVideo, nextVideo],
+		loadingProgress,
 		onActiveVideoRatingUpdate,
 		onAnimationStart,
 		onAnimationEnd,
 	} = useUnit({
 		displayedVideos: model.$displayedVideos,
+		loadingProgress: model.$activeVideoLoadingProgress,
 		onActiveVideoRatingUpdate: model.activeVideoRatingUpdated,
 		onAnimationStart: model.scrollAnimationStarted,
 		onAnimationEnd: model.scrollAnimationEnded,
 	});
-
-	useGate(model.Gate);
 
 	return (
 		<div className={styles.player}>
@@ -42,6 +44,7 @@ export const Player: FC = () => {
 					isActive={true}
 					className={styles.videoContainerCurrent}
 					videoItem={currentVideo}
+					loadingProgress={loadingProgress}
 					onTransitionStart={onAnimationStart}
 					onTransitionEnd={onAnimationEnd}
 					onVideoRatingUpdate={onActiveVideoRatingUpdate}

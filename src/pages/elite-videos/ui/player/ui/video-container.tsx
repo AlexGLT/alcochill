@@ -2,18 +2,28 @@ import clsx from 'clsx';
 import {useLayoutEffect, useRef} from 'react';
 
 import {Rating} from '@shared/ui/rating';
-import {useStableCallback} from '@shared/libs';
+import {isNumber, useStableCallback} from '@shared/libs';
+import {Progress} from '@shared/ui/progress';
 
 import styles from '../styles.module.scss';
 
-import type {FC} from 'react';
+import type {FC, TransitionEventHandler} from 'react';
 import type {VideoItem} from '../../../types';
 
+
+const createTransitionEventHandler = (handler: () => void): TransitionEventHandler<HTMLDivElement> => {
+	return (event) => {
+		if (event.target === event.currentTarget) {
+			handler();
+		}
+	};
+};
 
 type Props = {
 	isActive?: boolean,
 	className: string,
 	videoItem: VideoItem,
+	loadingProgress?: number | null,
 	onVideoRatingUpdate?: (index: number) => void,
 	onTransitionStart?: () => void,
 	onTransitionEnd?: () => void,
@@ -23,6 +33,7 @@ export const VideoContainer: FC<Props> = ({
 	isActive,
 	className,
 	videoItem,
+	loadingProgress,
 	onVideoRatingUpdate,
 	onTransitionStart,
 	onTransitionEnd,
@@ -73,15 +84,15 @@ export const VideoContainer: FC<Props> = ({
 		}
 	}, [isActive, handlePlayToggle]);
 
-	const handleTransitionStart = (): void => {
+	const handleTransitionStart = createTransitionEventHandler(() => {
 		onTransitionStart?.();
 
 		if (videoRef.current) {
 			videoRef.current.pause();
 		}
-	};
+	});
 
-	const handleTransitionEnd = (): void => {
+	const handleTransitionEnd = createTransitionEventHandler(() => {
 		onTransitionEnd?.();
 
 		const element = videoRef.current;
@@ -93,7 +104,7 @@ export const VideoContainer: FC<Props> = ({
 				element.currentTime = 0;
 			}
 		}
-	};
+	});
 
 	return (
 		<div
@@ -102,13 +113,24 @@ export const VideoContainer: FC<Props> = ({
 			onTransitionStart={handleTransitionStart}
 			onTransitionEnd={handleTransitionEnd}
 		>
-			<div className={styles.sender}>
-				{from}
-			</div>
+			{isNumber(loadingProgress) ? (
+				<div className={styles.loadingProgress}>
+					<Progress value={loadingProgress}/>
+				</div>
+			) : null}
 
-			<div className={styles.timestamp}>
-				{new Date(timestamp).toLocaleString()}
-			</div>
+			{from ? (
+				<div className={styles.sender}>
+					{from}
+				</div>
+			) : null}
+
+			{timestamp ? (
+				<div className={styles.timestamp}>
+					{new Date(timestamp).toLocaleString()}
+				</div>
+			) : null}
+
 
 			<div className={styles.rating}>
 				<Rating
