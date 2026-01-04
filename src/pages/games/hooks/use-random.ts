@@ -31,8 +31,11 @@ export const useRandom = (): ReturnParams => {
 
 			for (let index = 0; index < players.length; index++) {
 				const [victim] = temp.splice(Math.floor(Math.random() * temp.length), 1);
+				const targetTeam = randomizedTeams[index % teamCount];
 
-				randomizedTeams[index % teamCount].push(victim);
+				if (victim && targetTeam) {
+					targetTeam.push(victim);
+				}
 			}
 
 			setTeams(randomizedTeams);

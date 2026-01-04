@@ -12,22 +12,6 @@ interface Promise<T> {
 
 type CSSModule = Record<string, string>;
 
-declare module '*.module.css' {
-	const styles: CSSModule;
-	export = styles;
-}
+declare module '*.module.css';
 
-declare module '*.module.scss' {
-	const styles: CSSModule;
-	export = styles;
-}
-
-declare module '*.module.less' {
-	const styles: CSSModule;
-	export = styles;
-}
-
-declare module '*.module.styl' {
-	const styles: CSSModule;
-	export = styles;
-}
+declare module '*.module.scss';

@@ -1,7 +1,4 @@
-import type {Sound} from './types';
-
-
-export const SOUNDS: Array<Sound> = [
+export const SOUNDS = [
 	{src: '/audio/bell.mp3', label: 'Bell'},
 	{src: '/audio/fart.mp3', label: 'Fart'},
 	{src: '/audio/goofy.mp3', label: 'Goofy'},
@@ -50,7 +47,7 @@ export const SOUNDS: Array<Sound> = [
 	{src: '/audio/toyota.mp3', label: 'Toyota'},
 	{src: '/audio/victory.mp3', label: 'Victory'},
 	{src: '/audio/yamete-kudasai.mp3', label: 'Yamete Kudasai'},
-];
+] as const;
 
 // @ts-expect-error WHY: temp
 window.dangerZones = {
