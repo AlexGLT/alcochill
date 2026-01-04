@@ -52,8 +52,16 @@ export const VideoContainer: FC<Props> = ({
 	useLayoutEffect(() => {
 		if (isActive) {
 			const onKeyDown = (event: KeyboardEvent): void => {
+				const element = videoRef.current;
+
 				if (event.key === ' ') {
 					handlePlayToggle();
+				} else if (element) {
+					if (event.key === 'ArrowRight') {
+						element.currentTime += 1;
+					} else if (event.key === 'ArrowLeft') {
+						element.currentTime -= 1;
+					}
 				}
 			};
 
@@ -113,8 +121,6 @@ export const VideoContainer: FC<Props> = ({
 			<video
 				ref={videoRef}
 				src={src}
-				width="100%"
-				height="100%"
 				autoPlay={isActive}
 				loop={true}
 				controls={true}
