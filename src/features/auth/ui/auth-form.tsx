@@ -45,6 +45,7 @@ export const AuthForm: FC<Props> = ({isLoginAuth}) => {
 								{...field}
 								variant="subtle"
 								placeholder="Enter your username"
+								autoComplete={isLoginAuth ? 'username' : 'off'}
 							/>
 						);
 					}}
@@ -73,6 +74,7 @@ export const AuthForm: FC<Props> = ({isLoginAuth}) => {
 								type="password"
 								variant="subtle"
 								placeholder="Enter your password"
+								autoComplete={isLoginAuth ? 'current-password' : 'off'}
 							/>
 						);
 					}}
@@ -103,6 +105,7 @@ export const AuthForm: FC<Props> = ({isLoginAuth}) => {
 									type="password"
 									variant="subtle"
 									placeholder="Confirm your password"
+									autoComplete="off"
 								/>
 							);
 						}}
