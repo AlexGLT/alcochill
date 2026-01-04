@@ -1,21 +1,44 @@
-import styles from './empty-state.module.scss';
+import {EmptyState as ChakraEmptyState, VStack} from '@chakra-ui/react';
 
-import type {FC} from 'react';
+import type {FC, ReactNode, RefObject} from 'react';
+import type {EmptyStateRootProps} from '@chakra-ui/react';
 
 
-const DEFAULT_MESSAGE = 'No data available!';
-
-type Props = {
-	message?: string,
-};
+export type Props = {
+	ref?: RefObject<HTMLDivElement | null>,
+	title: string,
+	description?: string,
+	icon?: ReactNode,
+} & EmptyStateRootProps;
 
 const EmptyState: FC<Props> = ({
-	message = DEFAULT_MESSAGE,
+	ref,
+	title,
+	description,
+	icon,
+	children,
+	...rest
 }) => {
 	return (
-		<div className={styles.emptyState}>
-			{message}
-		</div>
+		<ChakraEmptyState.Root ref={ref} {...rest}>
+			<ChakraEmptyState.Content>
+				{icon ? <ChakraEmptyState.Indicator>{icon}</ChakraEmptyState.Indicator> : null}
+
+				{description ? (
+					<VStack textAlign="center">
+						<ChakraEmptyState.Title>{title}</ChakraEmptyState.Title>
+
+						<ChakraEmptyState.Description>
+							{description}
+						</ChakraEmptyState.Description>
+					</VStack>
+				) : (
+					<ChakraEmptyState.Title>{title}</ChakraEmptyState.Title>
+				)}
+
+				{children}
+			</ChakraEmptyState.Content>
+		</ChakraEmptyState.Root>
 	);
 };
 

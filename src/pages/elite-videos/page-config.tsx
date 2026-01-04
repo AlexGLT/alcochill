@@ -1,4 +1,4 @@
-import {EliteVideosView} from './elite-videos-view';
+import {PageView} from './page-view';
 
 import type {PageConfig} from '@shared/types/pages';
 
@@ -11,7 +11,7 @@ const pageConfig: PageConfig = {
 	id: PAGE_ID,
 	name: PAGE_NAME,
 	path: PAGE_PATH,
-	element: <EliteVideosView/>,
+	element: <PageView/>,
 	params: {
 		isSinglePage: true,
 		hasCenteredContent: true,

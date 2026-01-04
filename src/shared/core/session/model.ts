@@ -11,9 +11,7 @@ import {differenceInSeconds} from 'date-fns';
 
 import {$apiClient, apiClientUpdated} from '@shared/api';
 import {refreshUserFx} from '@shared/api/auth';
-import {appStarted} from '@shared/core/effector';
-
-import {createSingletonEffect} from '../effector/libs';
+import {appStarted, createSingletonEffect} from '@shared/core/effector';
 
 import type {ApiContext} from '@shared/api';
 import type {UserSession} from '@shared/api/auth';

@@ -30,7 +30,7 @@ export const baseRules = {
 	'no-async-promise-executor': SEVERITY.ERROR,
 
 	// https://eslint.org/docs/latest/rules/no-await-in-loop
-	'no-await-in-loop': SEVERITY.ERROR,
+	'no-await-in-loop': SEVERITY.OFF, // WHY: sometimes it may be useful
 
 	// https://eslint.org/docs/latest/rules/no-class-assign
 	'no-class-assign': SEVERITY.ERROR,

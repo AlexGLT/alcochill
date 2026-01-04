@@ -38,7 +38,7 @@ export const Gallery: FC<Props> = () => {
 							<div className={styles.eliteMemesGalleryBackground} style={{'--background-image': `url('${currentSrc}')`}}/>
 						</>
 					) : (
-						<EmptyState/>
+						<EmptyState title="No data available!"/>
 					)}
 				</Card>
 			</div>

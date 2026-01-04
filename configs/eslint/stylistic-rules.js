@@ -363,9 +363,10 @@ export const stylisticRules = {
 	}],
 
 	// https://eslint.style/rules/default/no-tabs
-	'stylistic/no-tabs': [SEVERITY.ERROR, {
-		allowIndentationTabs: true,
-	}],
+	// WHY: ruin comments, check github issues
+	// 'stylistic/no-tabs': [SEVERITY.ERROR, {
+	// 	allowIndentationTabs: true,
+	// }],
 
 	// https://eslint.style/rules/default/no-trailing-spaces
 	'stylistic/no-trailing-spaces': [SEVERITY.ERROR, {

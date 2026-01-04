@@ -1,1 +1,1 @@
-export {default} from './elite-videos';
+export {default} from './page-config';

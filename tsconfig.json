@@ -17,7 +17,7 @@
 			"@features/*": ["./src/features/*"],
 			"@widgets/*": ["./src/widgets/*"],
 			"@pages/*": ["./src/pages/*"],
-			"@shared/*": ["./src/shared/*"]
+			"@shared/*": ["./src/shared/*"],
 		},
 
 		/* Type Checking */
@@ -26,6 +26,7 @@
 		"allowUnusedLabels": false,
 		"noImplicitOverride": true,
 		"noPropertyAccessFromIndexSignature": false,
+		"noUncheckedIndexedAccess": true,
 		"exactOptionalPropertyTypes": false,
 		"strictBindCallApply": true,
 		"strictFunctionTypes": false,
@@ -73,7 +74,8 @@
 			{
 				"name": "typescript-plugin-css-modules",
 				"options": {
-					"classnameTransform": "camelCaseOnly"
+					"classnameTransform": "camelCaseOnly",
+					"namedExports": false,
 				}
 			}
 		]
