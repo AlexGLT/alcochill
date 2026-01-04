@@ -1,22 +1,22 @@
 import {useLayoutEffect, useMemo} from 'react';
 import {useUnit} from 'effector-react';
 import {addDays, addYears, isValid} from 'date-fns';
+import {FaFileCircleXmark} from 'react-icons/fa6';
 
+import {Skeleton} from '@chakra-ui/react';
 import {useQuery} from '@tanstack/react-query';
 import {getVideosListByRangeFx} from '@shared/api/random-videos';
+import EmptyState from '@shared/ui/empty-state';
 
 import {Player} from './ui';
 import {model} from './model';
 
 import styles from './styles.module.scss';
 
-import type {FC} from 'react';
-import type {Video} from '@shared/api/random-videos';
+import type {FC, ReactNode} from 'react';
 
 
 const TODAY = Date.now();
-
-const EMPTY_LIST: Array<Video> = [];
 
 export const PageView: FC = () => {
 	const {
@@ -46,7 +46,7 @@ export const PageView: FC = () => {
 		};
 	}, []);
 
-	const {data = EMPTY_LIST} = useQuery({
+	const {isPending, data} = useQuery({
 		queryKey: ['videos'],
 		queryFn: ({signal}) => getVideosListByRange({
 			meta: searchParams,
@@ -55,12 +55,37 @@ export const PageView: FC = () => {
 	});
 
 	useLayoutEffect(() => {
-		updateVideosInfo(data);
+		updateVideosInfo(data || []);
 	}, [data, updateVideosInfo]);
+
+	const renderView = (): ReactNode => {
+		if (isPending) {
+			return (
+				<Skeleton
+					variant="shine"
+					width="100%"
+					height="100%"
+				/>
+			);
+		}
+
+		if (!data?.length) {
+			return (
+				<EmptyState
+					size="lg"
+					title="No videos found"
+					description="Try adjusting your search criteria"
+					icon={<FaFileCircleXmark/>}
+				/>
+			);
+		}
+
+		return <Player/>;
+	};
 
 	return (
 		<main className={styles.main}>
-			<Player/>
+			{renderView()}
 		</main>
 	);
 };

@@ -118,7 +118,7 @@ const $preloadedVideosCount = $videosListRef.map(({current: videosList}) => vide
 const movedForward = createEvent();
 const movedBackward = createEvent();
 
-const $activeIndex = createStore<number>(0);
+const $activeIndex = createStore<number>(0).reset(Gate.close);
 
 const $displayedVideos = combine($videosListRef, $activeIndex, ({current: videosList}, index) => {
 	return [
@@ -357,7 +357,7 @@ sample({
 	}) => {
 		return (
 			!isAlreadyPending &&
-			preloadedVideosCount <= index + 3 &&
+			preloadedVideosCount <= index + 5 &&
 			!!videosCount &&
 			videosCount !== preloadedVideosCount
 		);
