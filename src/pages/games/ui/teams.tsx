@@ -1,3 +1,5 @@
+import clsx from 'clsx';
+
 import Card from '@shared/ui/card';
 
 import styles from '../games.module.scss';
@@ -15,7 +17,7 @@ export const Teams: FC<Props> = ({teams}) => {
 			{teams.length ? (
 				teams.map((randomTeam, index) => (
 					// eslint-disable-next-line react/no-array-index-key
-					<Card key={index} customClasses={`${styles.gamesCard} ${styles.gamesTeam}`}>
+					<Card key={index} customClasses={clsx(styles.gamesCard, styles.gamesTeam)}>
 						<h2>
 							Team
 							{' '}
