@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import {useLayoutEffect, useRef} from 'react';
+import {useLayoutEffect, useRef, useState} from 'react';
 
 import {Rating} from '@shared/ui/rating';
 import {isNumber, useStableCallback} from '@shared/libs';
@@ -48,14 +48,19 @@ export const VideoContainer: FC<Props> = ({
 
 	const videoRef = useRef<HTMLVideoElement>(null);
 
+	const [isPausedManually, setIsPausedManually] = useState(false);
+	const [isHovered, setIsHovered] = useState(false);
+
 	const handlePlayToggle = useStableCallback((): void => {
 		const element = videoRef.current;
 
 		if (element) {
 			if (element.paused) {
 				element.play();
+				setIsPausedManually(false);
 			} else {
 				element.pause();
+				setIsPausedManually(true);
 			}
 		}
 	});
@@ -106,6 +111,14 @@ export const VideoContainer: FC<Props> = ({
 		}
 	});
 
+	const handleMouseEnter = (): void => {
+		setIsHovered(true);
+	};
+
+	const handleMouseLeave = (): void => {
+		setIsHovered(false);
+	};
+
 	return (
 		<div
 			inert={!isActive}
@@ -119,20 +132,23 @@ export const VideoContainer: FC<Props> = ({
 				</div>
 			) : null}
 
-			{from ? (
-				<div className={styles.sender}>
-					{from}
+			{from || timestamp ? (
+				<div className={styles.meta}>
+					{from ? (
+						<div className={styles.card}>
+							{new Date(timestamp).toLocaleString()}
+						</div>
+					) : null}
+
+					{timestamp ? (
+						<div className={styles.card}>
+							{from}
+						</div>
+					) : null}
 				</div>
 			) : null}
 
-			{timestamp ? (
-				<div className={styles.timestamp}>
-					{new Date(timestamp).toLocaleString()}
-				</div>
-			) : null}
-
-
-			<div className={styles.rating}>
+			<div className={clsx(styles.rating, styles.card)}>
 				<Rating
 					id={fileId}
 					value={rating}
@@ -149,8 +165,10 @@ export const VideoContainer: FC<Props> = ({
 				disablePictureInPicture={true}
 				disableRemotePlayback={true}
 				controlsList="nofullscreen noremoteplayback"
-				className={styles.video}
+				className={clsx(styles.video, isActive && (isPausedManually || isHovered) && styles.videoCurrent)}
 				onClick={isActive ? handlePlayToggle : undefined}
+				onMouseEnter={isActive ? handleMouseEnter : undefined}
+				onMouseLeave={isActive ? handleMouseLeave : undefined}
 			/>
 		</div>
 	);
