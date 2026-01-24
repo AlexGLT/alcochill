@@ -70,16 +70,6 @@
 
 		/* Completeness */
 		"skipLibCheck": true,
-		"plugins": [
-			{
-				"name": "typescript-plugin-css-modules",
-				"options": {
-					"classnameTransform": "camelCaseOnly",
-					"namedExports": false,
-					"noUncheckedIndexedAccess": true,
-				}
-			}
-		]
 	},
 	"include": ["src"],
 	"references": [{"path": "./tsconfig.node.json"}],
