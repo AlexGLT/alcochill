@@ -1,6 +1,13 @@
 import {useLayoutEffect, useMemo} from 'react';
 import {useUnit} from 'effector-react';
-import {addDays, addYears, isValid} from 'date-fns';
+
+import {
+	addDays,
+	addYears,
+	format,
+	isValid,
+} from 'date-fns';
+
 import {FaFileCircleXmark} from 'react-icons/fa6';
 
 import {Skeleton} from '@chakra-ui/react';
@@ -8,7 +15,8 @@ import {useQuery} from '@tanstack/react-query';
 import {getVideosListByRangeFx} from '@shared/api/random-videos';
 import EmptyState from '@shared/ui/empty-state';
 
-import {Player} from './ui';
+import {Player} from './ui/player';
+import {SettingsDrawer} from './ui/settings';
 import {model} from './model';
 
 import styles from './styles.module.scss';
@@ -41,13 +49,13 @@ export const PageView: FC = () => {
 			: addYears(dateEnd, -1);
 
 		return {
-			dateStart: dateStart.toISOString().split('T')[0]!,
-			dateEnd: dateEnd.toISOString().split('T')[0]!,
+			dateStart: format(dateStart, 'yyyy-MM-dd'),
+			dateEnd: format(dateEnd, 'yyyy-MM-dd'),
 		};
 	}, []);
 
 	const {isPending, data} = useQuery({
-		queryKey: ['videos'],
+		queryKey: ['videos', searchParams],
 		queryFn: ({signal}) => getVideosListByRange({
 			meta: searchParams,
 			options: {signal},
@@ -86,6 +94,8 @@ export const PageView: FC = () => {
 	return (
 		<main className={styles.main}>
 			{renderView()}
+
+			<SettingsDrawer/>
 		</main>
 	);
 };
